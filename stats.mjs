@@ -47,9 +47,9 @@ export function disk() {
       return {
         device,
         type,
-        total: used + available,
-        used,
-        available,
+        total: Number(used) + Number(available),
+        used: Number(used),
+        available: Number(available),
         mountpoint,
       };
     })
