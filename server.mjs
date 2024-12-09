@@ -18,7 +18,16 @@ function notFound(res) {
 }
 
 createServer(function (request, response) {
-  if (request.url === "favicon.ico" || request.method !== "GET") {
+  response.addListener("finish", () =>
+    console.log(
+      new Date().toISOString(),
+      request.method,
+      request.url,
+      response.statusCode
+    )
+  );
+
+  if (request.url === "/favicon.ico" || request.method !== "GET") {
     return notFound(response);
   }
 
@@ -26,7 +35,7 @@ createServer(function (request, response) {
   const [cmd, ...parts] = url.pathname.slice(1).split("/");
 
   if (url.pathname === "/") {
-    response.setHeader("location", "/ui/index.html");
+    response.writeHead(302, { location: "/ui/index.html" });
     response.end();
     return;
   }
