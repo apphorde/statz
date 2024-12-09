@@ -109,11 +109,11 @@
               <template for="disk of diskUsage">
                 <tr>
                   <td class="px-6 py-4 whitespace-nowrap text-sm">
-                    {{ toDecimal(disk.used / oneGB) }} GB / {{
-                    toDecimal(disk.total / oneGB) }} GB
+                    {{ toDecimal(disk.used / oneMB) }} GB / {{
+                    toDecimal(disk.total / oneMB) }} GB
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm">
-                    {{ toDecimal(disk.available / oneGB) }} GB
+                    {{ toDecimal(disk.available / oneMB) }} GB
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm">
                     {{ disk.device }}
@@ -127,7 +127,7 @@
           </table>
         </st-panel>
 
-        <div class="mb-6 bg-white/10 rounded-lg shadow-md overflow-hidden">
+        <!-- div class="mb-6 bg-white/10 rounded-lg shadow-md overflow-hidden">
           <div class="p-6">
             <h2 class="text-xl font-semibold text-gray-800 mb-2">
               Running Processes
@@ -182,7 +182,7 @@
               </tbody>
             </table>
           </div>
-        </div>
+        </div -->
       </div>
     </template>
     <script type="module">
