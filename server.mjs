@@ -3,6 +3,9 @@ import { createServer } from "http";
 import { extname, join, normalize } from "path";
 import stats from "./stats.mjs";
 
+const cwd = process.cwd();
+const port = Number(process.env.PORT || 5747);
+
 const mime = {
   ".css": "text/css",
   ".html": "text/html",
@@ -50,4 +53,6 @@ createServer(function (request, response) {
   }
 
   notFound(response);
-}).listen(process.env.PORT || 5747);
+}).listen(port, "0.0.0.0", () => {
+  console.log("Service started on http://localhost:" + port);
+});
