@@ -5,9 +5,13 @@ import { loadavg, freemem, cpus, networkInterfaces } from "os";
 const SPACES = /\s+/;
 
 export function memory() {
+  const total = totalmem();
+  const free = freemem();
+
   return {
-    free: freemem(),
-    total: totalmem(),
+    free,
+    total,
+    used: total - free,
   };
 }
 
@@ -31,10 +35,10 @@ export function disk(type) {
   const lines = output.stdout.split("\n").slice(1);
 
   return lines.map((line) => {
-    const [device, size, used, available, _, mountpoint] = line.split(SPACES);
+    const [device, total, used, available, _, mountpoint] = line.split(SPACES);
     return {
       device,
-      size,
+      total,
       used,
       available,
       mountpoint,

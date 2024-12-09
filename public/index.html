@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Server Stats</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script type="importmap">
+      {
+        "imports": {
+          "@lithium/": "https://--lithium.static.apphor.de/",
+          "@sodium/": "https://--sodium.static.apphor.de/",
+          "@lucide/": "https://--lucide.static.apphor.de/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <template>
+      <div class="p-8 bg-gray-100 min-h-screen">
+        <h1 class="text-3xl font-bold mb-6 text-gray-800">Server Dashboard</h1>
+        <div class="grid gap-6 md:grid-cols-1 lg:grid-cols-2">
+          <div class="bg-white p-6 rounded-lg shadow-md">
+            <div class="flex items-center justify-between mb-2">
+              <h2 class="text-sm font-medium text-gray-600">Disk Usage</h2>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 text-gray-400"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="22" y1="12" x2="2" y2="12"></line>
+                <path
+                  d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"
+                ></path>
+                <line x1="6" y1="16" x2="6.01" y2="16"></line>
+                <line x1="10" y1="16" x2="10.01" y2="16"></line>
+              </svg>
+            </div>
+            <table class="w-full">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Use
+                  </th>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Free
+                  </th>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Path
+                  </th>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  ></th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <template for="disk of diskUsage">
+                  <tr>
+                    <td
+                      class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    >
+                      {{ toDecimal(disk.used / oneGB) }} GB / {{
+                      toDecimal(disk.total / oneGB) }} GB
+                    </td>
+                    <td
+                      class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    >
+                      {{ toDecimal(disk.available / oneGB) }} GB
+                    </td>
+                    <td
+                      class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    >
+                      {{ disk.mountpoint }}
+                    </td>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
+          </div>
+          <div class="bg-white p-6 rounded-lg shadow-md">
+            <div class="flex items-center justify-between mb-2">
+              <h2 class="text-sm font-medium text-gray-600">Network Usage</h2>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 text-gray-400"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+              </svg>
+            </div>
+            <div class="text-2xl font-bold text-gray-700">
+              {{ networkUsage.download }} Mbps
+            </div>
+            <p class="text-xs text-gray-500">↓ Download</p>
+            <div class="mt-4 text-2xl font-bold text-gray-700">
+              {{networkUsage.upload}} Mbps
+            </div>
+            <p class="text-xs text-gray-500">↑ Upload</p>
+          </div>
+          <div class="bg-white p-6 rounded-lg shadow-md">
+            <div class="flex items-center justify-between mb-2">
+              <h2 class="text-sm font-medium text-gray-600">Memory Usage</h2>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 text-gray-400"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+              </svg>
+            </div>
+            <div class="text-2xl font-bold text-gray-700">
+              {{ toDecimal(memoryUsage.used / oneMB) }} MB / {{
+              toDecimal(memoryUsage.total/oneMB) }} MB
+            </div>
+            <div class="mt-2 bg-gray-200 rounded-full h-2">
+              <div
+                class="bg-green-500 rounded-full h-2"
+                style-width="`${ (memoryUsage.used / memoryUsage.total) * 100}%`"
+              ></div>
+            </div>
+            <p class="text-xs text-gray-500 mt-2">
+              {{ toDecimal(memoryUsage.free / oneMB) }} MB free
+            </p>
+          </div>
+          <div class="bg-white p-6 rounded-lg shadow-md">
+            <div class="flex items-center justify-between mb-2">
+              <h2 class="text-sm font-medium text-gray-600">CPU Usage</h2>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 text-gray-400"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
+                <rect x="9" y="9" width="6" height="6"></rect>
+                <line x1="9" y1="1" x2="9" y2="4"></line>
+                <line x1="15" y1="1" x2="15" y2="4"></line>
+                <line x1="9" y1="20" x2="9" y2="23"></line>
+                <line x1="15" y1="20" x2="15" y2="23"></line>
+                <line x1="20" y1="9" x2="23" y2="9"></line>
+                <line x1="20" y1="14" x2="23" y2="14"></line>
+                <line x1="1" y1="9" x2="4" y2="9"></line>
+                <line x1="1" y1="14" x2="4" y2="14"></line>
+              </svg>
+            </div>
+            <div class="text-2xl font-bold text-gray-700">{{cpuUsage[0]}}</div>
+            <div class="mt-2 bg-gray-200 rounded-full h-2">
+              <div
+                class="bg-red-500 rounded-full h-2"
+                style-width="`${cpuUsage[0]}%`"
+              ></div>
+            </div>
+          </div>
+        </div>
+        <div class="mt-6 bg-white rounded-lg shadow-md overflow-hidden">
+          <div class="p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-2">
+              Running Processes
+            </h2>
+            <p class="text-sm text-gray-600 mb-4">
+              A list of currently running processes on the server.
+            </p>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    PID
+                  </th>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Name
+                  </th>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    CPU Usage
+                  </th>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Memory Usage
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <template>
+                  <tr key="{process.pid}">
+                    <td
+                      class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    >
+                      {{process.pid}}
+                    </td>
+                    <td
+                      class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+                    >
+                      {{process.name}}
+                    </td>
+                    <td
+                      class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    >
+                      {{process.cpu}}%
+                    </td>
+                    <td
+                      class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    >
+                      {{process.memory}} MB
+                    </td>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </template>
+    <script type="module">
+      import { ref, onInit } from "@lithium/web";
+
+      const oneMB = 1048576;
+      const oneGB = oneMB * 1024;
+
+      function setup() {
+        const process = ref({});
+        const cpuUsage = ref([]);
+        const memoryUsage = ref({});
+
+        const networkUsage = ref({
+          download: 0,
+          upload: 0,
+        });
+
+        const diskUsage = ref({
+          total: 0,
+          used: 0,
+          available: 0,
+          mountpoint: "/",
+        });
+
+        function refresh() {
+          stat("/memory", memoryUsage);
+        }
+
+        async function stat(apiPath, target) {
+          const req = fetch(apiPath);
+          target.value = await req.json();
+        }
+
+        onInit(refresh);
+
+        return {
+          refresh,
+          cpuUsage,
+          diskUsage,
+          networkUsage,
+          process,
+          oneMB,
+          oneGB,
+        };
+      }
+    </script>
+  </body>
+</html>
