@@ -96,11 +96,13 @@
                 <th
                   class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
                 >
-                  Path
+                  Device
                 </th>
                 <th
-                  class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
-                ></th>
+                  class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap"
+                >
+                  Mounted on
+                </th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200">
@@ -112,6 +114,9 @@
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm">
                     {{ toDecimal(disk.available / oneGB) }} GB
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    {{ disk.device }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm">
                     {{ disk.mountpoint }}
