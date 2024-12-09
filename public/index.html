@@ -72,72 +72,13 @@
               ></div>
             </div>
           </st-panel>
-
-          <!-- div class="bg-white/10 p-6 rounded-lg shadow-md">
-            <div class="flex items-center justify-between mb-2">
-              <h2 class="text-sm font-medium text-gray-600">Network Usage</h2>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-4 w-4 text-gray-400"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-              </svg>
-            </div>
-          </div -->
-
-          <!-- div class="bg-white/10 p-6 rounded-lg shadow-md">
-            <div class="flex items-center justify-between mb-2">
-              <h2 class="text-sm font-medium text-gray-200">Memory Usage</h2>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-4 w-4 text-gray-400"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
-              </svg>
-            </div>
-          </div -->
-
-          <!-- div class="bg-white/10 p-6 rounded-lg shadow-md">
-            <div class="flex items-center justify-between mb-2">
-              <h2 class="text-sm font-medium text-gray-600">CPU Usage</h2>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-4 w-4 text-gray-400"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
-                <rect x="9" y="9" width="6" height="6"></rect>
-                <line x1="9" y1="1" x2="9" y2="4"></line>
-                <line x1="15" y1="1" x2="15" y2="4"></line>
-                <line x1="9" y1="20" x2="9" y2="23"></line>
-                <line x1="15" y1="20" x2="15" y2="23"></line>
-                <line x1="20" y1="9" x2="23" y2="9"></line>
-                <line x1="20" y1="14" x2="23" y2="14"></line>
-                <line x1="1" y1="9" x2="4" y2="9"></line>
-                <line x1="1" y1="14" x2="4" y2="14"></line>
-              </svg>
-            </div>
-          </div -->
         </div>
 
-        <st-panel icon="hard-disk" title="Disk Usage">
+        <st-panel
+          icon="hard-drive"
+          title="Disk Usage"
+          on-refresh="refreshDisk()"
+        >
           <table class="w-full">
             <thead>
               <tr>
@@ -179,29 +120,6 @@
             </tbody>
           </table>
         </st-panel>
-
-        <!-- div class="bg-white/10 p-6 rounded-lg shadow-md text-gray-200 mb-6">
-          <div class="flex items-center justify-between mb-2">
-            <h2 class="text-sm font-medium">Disk Usage</h2>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-4 w-4 text-gray-400"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <line x1="22" y1="12" x2="2" y2="12"></line>
-              <path
-                d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"
-              ></path>
-              <line x1="6" y1="16" x2="6.01" y2="16"></line>
-              <line x1="10" y1="16" x2="10.01" y2="16"></line>
-            </svg>
-          </div>
-        </div -->
 
         <div class="mb-6 bg-white/10 rounded-lg shadow-md overflow-hidden">
           <div class="p-6">
@@ -259,14 +177,6 @@
             </table>
           </div>
         </div>
-        <st-panel
-          class="mb-6"
-          icon="hard-drive"
-          title="Disk usage"
-          on-refresh="refreshDisk()"
-        >
-          <div>{{ diskUsage.length }} disks</div>
-        </st-panel>
       </div>
     </template>
     <script type="module">
