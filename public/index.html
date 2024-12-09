@@ -14,15 +14,16 @@
         }
       }
     </script>
+    <script type="module" src="/ui/components.mjs"></script>
   </head>
   <body class="bg-gray-700 text-white">
     <template>
       <div class="p-8 min-h-screen">
         <h1 class="text-3xl font-bold mb-6 text-gray-100">Server Dashboard</h1>
         <div class="grid gap-6 md:grid-cols-1 lg:grid-cols-2">
-          <div class="bg-white/10 p-6 rounded-lg shadow-md">
+          <div class="bg-white/10 p-6 rounded-lg shadow-md text-gray-200">
             <div class="flex items-center justify-between mb-2">
-              <h2 class="text-sm font-medium text-gray-200">Disk Usage</h2>
+              <h2 class="text-sm font-medium">Disk Usage</h2>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="h-4 w-4 text-gray-400"
@@ -88,6 +89,8 @@
               </tbody>
             </table>
           </div>
+        </div>
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <div class="bg-white/10 p-6 rounded-lg shadow-md">
             <div class="flex items-center justify-between mb-2">
               <h2 class="text-sm font-medium text-gray-600">Network Usage</h2>
@@ -269,10 +272,22 @@
           mountpoint: "/",
         });
 
-        function refresh() {
-          stat("/memory", memoryUsage);
+        function refreshDisk() {
           stat("/disk", diskUsage);
+        }
+
+        function refreshMemory() {
+          stat("/memory", memoryUsage);
+        }
+
+        function refreshCpu() {
           stat("/cpu", cpuUsage);
+        }
+
+        function refresh() {
+          refreshMemory();
+          refreshDisk();
+          refreshCpu();
         }
 
         function toDecimal(value) {
@@ -288,6 +303,9 @@
 
         return {
           refresh,
+          refreshCpu,
+          refreshDisk,
+          refreshMemory,
           toDecimal,
           cpuUsage,
           diskUsage,
