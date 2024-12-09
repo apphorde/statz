@@ -1,7 +1,7 @@
 import { createReadStream, existsSync } from "fs";
 import { createServer } from "http";
 import { extname, join, normalize } from "path";
-import stats from "./stats.mjs";
+import * as stats from "./stats.mjs";
 
 const cwd = process.cwd();
 const port = Number(process.env.PORT || 5747);
