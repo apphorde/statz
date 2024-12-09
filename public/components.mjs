@@ -12,7 +12,6 @@ createComponent("st-panel", {
       },
     };
   },
-  // shadowDom: { mode: "open" },
   template:
     html(`<div class="bg-white/10 p-6 rounded-lg shadow-md text-gray-200">
       <div class="flex items-center justify-between mb-2">
@@ -20,6 +19,7 @@ createComponent("st-panel", {
         <button on-click="onRefresh()">
           <lucide-icon bind-icon="icon"></lucide-icon>
         </button>
+      </div>
       <slot></slot>
     </div>`),
 });

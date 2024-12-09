@@ -35,14 +35,18 @@ export function network() {
 }
 
 export function disk() {
-  const output = sh("df", ["-h"], { encoding: "utf8" });
+  const output = sh("df", ["--output=source,fstype,used,avail,target"], {
+    encoding: "utf8",
+  });
+
   const lines = output.stdout.split("\n").slice(1);
 
   return lines.map((line) => {
-    const [device, total, used, available, _, mountpoint] = line.split(SPACES);
+    const [device, type, used, available, mountpoint] = line.split(SPACES);
     return {
       device,
-      total,
+      type,
+      total: used + available,
       used,
       available,
       mountpoint,

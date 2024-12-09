@@ -22,7 +22,46 @@
         <h1 class="text-3xl font-bold mb-6 text-gray-100">Server Dashboard</h1>
 
         <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-6">
-          <div class="bg-white/10 p-6 rounded-lg shadow-md">
+          <st-panel icon="network" label="Network Usage">
+            <div class="text-2xl font-bold text-gray-300">
+              {{ networkUsage.download }} Mbps
+            </div>
+            <p class="text-xs text-gray-500">↓ Download</p>
+            <div class="mt-4 text-2xl font-bold text-gray-300">
+              {{ networkUsage.upload }} Mbps
+            </div>
+            <p class="text-xs text-gray-500">↑ Upload</p>
+          </st-panel>
+
+          <st-panel icon="memory-stick" title="Memory Usage">
+            <div class="text-2xl font-bold text-gray-700">
+              {{ toDecimal(memoryUsage.used / oneMB) }} MB / {{
+              toDecimal(memoryUsage.total / oneMB) }} MB
+            </div>
+            <div class="mt-2 bg-gray-200 rounded-full h-2">
+              <div
+                class="bg-green-500 rounded-full h-2"
+                style-width="`${ (memoryUsage.used / memoryUsage.total) * 100}%`"
+              ></div>
+            </div>
+            <p class="text-xs text-gray-500 mt-2">
+              {{ toDecimal(memoryUsage.free / oneMB) }} MB free
+            </p>
+          </st-panel>
+
+          <st-panel icon="cpu" title="CPU Usage">
+            <div class="text-2xl font-bold text-gray-700">
+              {{cpuUsage.loadAverage[0]}}
+            </div>
+            <div class="mt-2 bg-gray-200 rounded-full h-2">
+              <div
+                class="bg-red-500 rounded-full h-2"
+                style-width="`${cpuUsage.loadAverage[0]}%`"
+              ></div>
+            </div>
+          </st-panel>
+
+          <!-- div class="bg-white/10 p-6 rounded-lg shadow-md">
             <div class="flex items-center justify-between mb-2">
               <h2 class="text-sm font-medium text-gray-600">Network Usage</h2>
               <svg
@@ -38,16 +77,9 @@
                 <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
               </svg>
             </div>
-            <div class="text-2xl font-bold text-gray-300">
-              {{ networkUsage.download }} Mbps
-            </div>
-            <p class="text-xs text-gray-500">↓ Download</p>
-            <div class="mt-4 text-2xl font-bold text-gray-300">
-              {{networkUsage.upload}} Mbps
-            </div>
-            <p class="text-xs text-gray-500">↑ Upload</p>
-          </div>
-          <div class="bg-white/10 p-6 rounded-lg shadow-md">
+          </div -->
+
+          <!-- div class="bg-white/10 p-6 rounded-lg shadow-md">
             <div class="flex items-center justify-between mb-2">
               <h2 class="text-sm font-medium text-gray-200">Memory Usage</h2>
               <svg
@@ -63,21 +95,9 @@
                 <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
               </svg>
             </div>
-            <div class="text-2xl font-bold text-gray-700">
-              {{ toDecimal(memoryUsage.used / oneMB) }} MB / {{
-              toDecimal(memoryUsage.total/oneMB) }} MB
-            </div>
-            <div class="mt-2 bg-gray-200 rounded-full h-2">
-              <div
-                class="bg-green-500 rounded-full h-2"
-                style-width="`${ (memoryUsage.used / memoryUsage.total) * 100}%`"
-              ></div>
-            </div>
-            <p class="text-xs text-gray-500 mt-2">
-              {{ toDecimal(memoryUsage.free / oneMB) }} MB free
-            </p>
-          </div>
-          <div class="bg-white/10 p-6 rounded-lg shadow-md">
+          </div -->
+
+          <!-- div class="bg-white/10 p-6 rounded-lg shadow-md">
             <div class="flex items-center justify-between mb-2">
               <h2 class="text-sm font-medium text-gray-600">CPU Usage</h2>
               <svg
@@ -102,16 +122,7 @@
                 <line x1="1" y1="14" x2="4" y2="14"></line>
               </svg>
             </div>
-            <div class="text-2xl font-bold text-gray-700">
-              {{cpuUsage.loadAverage[0]}}
-            </div>
-            <div class="mt-2 bg-gray-200 rounded-full h-2">
-              <div
-                class="bg-red-500 rounded-full h-2"
-                style-width="`${cpuUsage.loadAverage[0]}%`"
-              ></div>
-            </div>
-          </div>
+          </div -->
         </div>
 
         <div class="bg-white/10 p-6 rounded-lg shadow-md text-gray-200 mb-6">
