@@ -17,12 +17,12 @@
   </head>
   <body class="bg-gray-700 text-white">
     <template>
-      <div class="p-8 bg-gray-100 min-h-screen">
-        <h1 class="text-3xl font-bold mb-6 text-gray-800">Server Dashboard</h1>
+      <div class="p-8 min-h-screen">
+        <h1 class="text-3xl font-bold mb-6 text-gray-100">Server Dashboard</h1>
         <div class="grid gap-6 md:grid-cols-1 lg:grid-cols-2">
-          <div class="bg-white p-6 rounded-lg shadow-md">
+          <div class="bg-white/10 p-6 rounded-lg shadow-md">
             <div class="flex items-center justify-between mb-2">
-              <h2 class="text-sm font-medium text-gray-600">Disk Usage</h2>
+              <h2 class="text-sm font-medium text-gray-200">Disk Usage</h2>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="h-4 w-4 text-gray-400"
@@ -42,7 +42,7 @@
               </svg>
             </div>
             <table class="w-full">
-              <thead class="bg-gray-50">
+              <thead class="bg-white/50">
                 <tr>
                   <th
                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -64,7 +64,7 @@
                   ></th>
                 </tr>
               </thead>
-              <tbody class="bg-white divide-y divide-gray-200">
+              <tbody class="divide-y divide-gray-200">
                 <template for="disk of diskUsage">
                   <tr>
                     <td
@@ -88,7 +88,7 @@
               </tbody>
             </table>
           </div>
-          <div class="bg-white p-6 rounded-lg shadow-md">
+          <div class="bg-white/10 p-6 rounded-lg shadow-md">
             <div class="flex items-center justify-between mb-2">
               <h2 class="text-sm font-medium text-gray-600">Network Usage</h2>
               <svg
@@ -104,18 +104,18 @@
                 <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
               </svg>
             </div>
-            <div class="text-2xl font-bold text-gray-700">
+            <div class="text-2xl font-bold text-gray-300">
               {{ networkUsage.download }} Mbps
             </div>
             <p class="text-xs text-gray-500">↓ Download</p>
-            <div class="mt-4 text-2xl font-bold text-gray-700">
+            <div class="mt-4 text-2xl font-bold text-gray-300">
               {{networkUsage.upload}} Mbps
             </div>
             <p class="text-xs text-gray-500">↑ Upload</p>
           </div>
-          <div class="bg-white p-6 rounded-lg shadow-md">
+          <div class="bg-white/10 p-6 rounded-lg shadow-md">
             <div class="flex items-center justify-between mb-2">
-              <h2 class="text-sm font-medium text-gray-600">Memory Usage</h2>
+              <h2 class="text-sm font-medium text-gray-200">Memory Usage</h2>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="h-4 w-4 text-gray-400"
@@ -143,7 +143,7 @@
               {{ toDecimal(memoryUsage.free / oneMB) }} MB free
             </p>
           </div>
-          <div class="bg-white p-6 rounded-lg shadow-md">
+          <div class="bg-white/10 p-6 rounded-lg shadow-md">
             <div class="flex items-center justify-between mb-2">
               <h2 class="text-sm font-medium text-gray-600">CPU Usage</h2>
               <svg
@@ -179,7 +179,8 @@
             </div>
           </div>
         </div>
-        <div class="mt-6 bg-white rounded-lg shadow-md overflow-hidden">
+
+        <div class="mt-6 bg-white/10 rounded-lg shadow-md overflow-hidden">
           <div class="p-6">
             <h2 class="text-xl font-semibold text-gray-800 mb-2">
               Running Processes
@@ -214,7 +215,7 @@
                   </th>
                 </tr>
               </thead>
-              <tbody class="bg-white divide-y divide-gray-200">
+              <tbody class="divide-y divide-gray-200">
                 <template>
                   <tr key="{process.pid}">
                     <td
@@ -274,6 +275,10 @@
           stat("/cpu", cpuUsage);
         }
 
+        function toDecimal(value) {
+          return Number(value).toFixed(2);
+        }
+
         async function stat(apiPath, target) {
           const req = await fetch(apiPath);
           target.value = await req.json();
@@ -283,6 +288,7 @@
 
         return {
           refresh,
+          toDecimal,
           cpuUsage,
           diskUsage,
           networkUsage,
