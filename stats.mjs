@@ -34,9 +34,8 @@ export function network() {
   return networkInterfaces();
 }
 
-export function disk(type) {
-  const args = ["-h"].concat(type ? ["-t", type] : []);
-  const output = sh("df", args, { encoding: "utf8" });
+export function disk() {
+  const output = sh("df", ["-h"], { encoding: "utf8" });
   const lines = output.stdout.split("\n").slice(1);
 
   return lines.map((line) => {
