@@ -244,7 +244,7 @@
       </div>
     </template>
     <script type="module">
-      import { ref, onInit } from "@lithium/web";
+      import { ref, onInit, domReady, mount } from "@lithium/web";
 
       const oneMB = 1048576;
       const oneGB = oneMB * 1024;
@@ -287,6 +287,11 @@
           oneGB,
         };
       }
+
+      domReady().then(function () {
+        const template = document.querySelector("template");
+        mount("body", { template, setup });
+      });
     </script>
   </body>
 </html>
