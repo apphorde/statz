@@ -275,7 +275,7 @@
         }
 
         async function stat(apiPath, target) {
-          const req = fetch(apiPath);
+          const req = await fetch(apiPath);
           target.value = await req.json();
         }
 
