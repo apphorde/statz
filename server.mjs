@@ -49,6 +49,7 @@ createServer(function (request, response) {
   }
 
   if (stats[cmd]) {
+    response.writeHead(200, { "content-type": "application/json" });
     return response.end(stats[cmd](...parts));
   }
 
