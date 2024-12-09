@@ -39,17 +39,19 @@ export function disk() {
     encoding: "utf8",
   });
 
-  const lines = output.stdout.split("\n").slice(1);
+  const lines = output.stdout.trim().split("\n").slice(1).filter(Boolean);
 
-  return lines.map((line) => {
-    const [device, type, used, available, mountpoint] = line.split(SPACES);
-    return {
-      device,
-      type,
-      total: used + available,
-      used,
-      available,
-      mountpoint,
-    };
-  });
+  return lines
+    .map((line) => {
+      const [device, type, used, available, mountpoint] = line.split(SPACES);
+      return {
+        device,
+        type,
+        total: used + available,
+        used,
+        available,
+        mountpoint,
+      };
+    })
+    .sort((a, b) => (a.device < b.device ? -1 : 1));
 }
