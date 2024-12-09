@@ -20,6 +20,11 @@ export function os() {
     type: type(),
     machine: machine(),
     uptime: uptime(),
+  };
+}
+
+export function cpu() {
+  return {
     cpus: cpus(),
     loadAverage: loadavg(),
   };

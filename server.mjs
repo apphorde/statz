@@ -59,7 +59,8 @@ createServer(function (request, response) {
 
   if (stats[cmd]) {
     response.writeHead(200, { "content-type": "application/json" });
-    return response.end(stats[cmd](...parts));
+    response.end(JSON.stringify(stats[cmd](...parts), null, 2));
+    return;
   }
 
   notFound(response);
