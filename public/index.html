@@ -27,11 +27,11 @@
             title="Network Usage"
             on-refresh="refreshNetwork()"
           >
-            <div class="text-2xl font-bold text-gray-300">
+            <div class="text-2xl font-bold">
               {{ networkUsage.download | 0 }} Mbps
             </div>
             <p class="text-xs text-gray-500">↓ Download</p>
-            <div class="mt-4 text-2xl font-bold text-gray-300">
+            <div class="mt-4 text-2xl font-bold">
               {{ networkUsage.upload | 0 }} Mbps
             </div>
             <p class="text-xs text-gray-500">↑ Upload</p>
@@ -42,7 +42,7 @@
             title="Memory Usage"
             on-refresh="refreshMemory()"
           >
-            <div class="text-2xl font-bold text-gray-700">
+            <div class="text-2xl font-bold">
               {{ toDecimal(memoryUsage.used / oneMB) }} MB / {{
               toDecimal(memoryUsage.total / oneMB) }} MB
             </div>

@@ -55,7 +55,7 @@ export function disk() {
         type,
         total,
         used,
-        available: Number(available),
+        available,
         mountpoint,
       };
     })

@@ -13,7 +13,7 @@ createComponent("st-panel", {
     };
   },
   template:
-    html(`<div class="bg-white/10 p-6 rounded-lg shadow-md text-gray-200">
+    html(`<div class="bg-white/10 p-6 rounded-lg shadow-md text-gray-200 h-full">
       <div class="flex items-center justify-between mb-2">
         <h2 class="text-sm font-medium">{{ title }}</h2>
         <button on-click="onRefresh()">
