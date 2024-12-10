@@ -28,11 +28,11 @@
             on-refresh="refreshNetwork()"
           >
             <div class="text-2xl font-bold text-gray-300">
-              {{ networkUsage.download }} Mbps
+              {{ networkUsage.download | 0 }} Mbps
             </div>
             <p class="text-xs text-gray-500">↓ Download</p>
             <div class="mt-4 text-2xl font-bold text-gray-300">
-              {{ networkUsage.upload }} Mbps
+              {{ networkUsage.upload | 0 }} Mbps
             </div>
             <p class="text-xs text-gray-500">↑ Upload</p>
           </st-panel>
@@ -109,11 +109,10 @@
               <template for="disk of diskUsage">
                 <tr>
                   <td class="px-6 py-4 whitespace-nowrap text-sm">
-                    {{ toDecimal(disk.used / oneMB) }} GB / {{
-                    toDecimal(disk.total / oneMB) }} GB
+                    {{ disk.used }} / {{ disk.total }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm">
-                    {{ toDecimal(disk.available / oneMB) }} GB
+                    {{ disk.available }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm">
                     {{ disk.device }}
