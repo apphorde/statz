@@ -22,7 +22,7 @@
         <h1 class="text-3xl font-bold mb-6 text-gray-100">Server Dashboard</h1>
 
         <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-6">
-          <!-- <st-panel
+          <st-panel
             icon="network"
             title="Network Usage"
             on-refresh="refreshNetwork()"
@@ -35,7 +35,7 @@
               {{ networkUsage.upload | 0 }} Mbps
             </div>
             <p class="text-xs text-gray-500">↑ Upload</p>
-          </st-panel> -->
+          </st-panel>
 
           <st-panel
             icon="memory-stick"
@@ -57,7 +57,7 @@
             </p>
             <na-chart
               bind-options="{height: 250}"
-              bind-data="history.memory"
+              bind-inputs="history.memory"
             ></na-chart>
           </st-panel>
 
@@ -225,19 +225,19 @@
         });
 
         function refreshDisk() {
-          stat("/disk", diskUsage);
+          return stat("/disk", diskUsage);
         }
 
         function refreshMemory() {
-          stat("/memory", memoryUsage);
+          return stat("/memory", memoryUsage);
         }
 
         function refreshCpu() {
-          stat("/cpu", cpuUsage);
+          return stat("/cpu", cpuUsage);
         }
 
         function refreshNetwork() {
-          stat("/network", networkUsage);
+          return stat("/network", networkUsage);
         }
 
         async function refresh() {
@@ -246,8 +246,12 @@
           await refreshCpu();
           await refreshNetwork();
 
-          history.value.memory.datasets[0].values.push(memoryUsage.used / oneMB);
-          history.value.cpu.datasets[0].values.push(cpuUsage.loadAverage[0]);
+          const data = history.value;
+
+          data.memory.datasets[0].values.push(memoryUsage.used / oneMB);
+          data.cpu.datasets[0].values.push(cpuUsage.loadAverage?.[0]);
+
+          history.value = { ...data };
         }
 
         function toDecimal(value) {
