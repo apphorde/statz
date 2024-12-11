@@ -22,7 +22,7 @@
         <h1 class="text-3xl font-bold mb-6 text-gray-100">Server Dashboard</h1>
 
         <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-6">
-          <st-panel
+          <!-- <st-panel
             icon="network"
             title="Network Usage"
             on-refresh="refreshNetwork()"
@@ -35,7 +35,7 @@
               {{ networkUsage.upload | 0 }} Mbps
             </div>
             <p class="text-xs text-gray-500">↑ Upload</p>
-          </st-panel>
+          </st-panel> -->
 
           <st-panel
             icon="memory-stick"
@@ -55,6 +55,10 @@
             <p class="text-xs text-gray-300 mt-2">
               {{ toDecimal(memoryUsage.free / oneMB) }} MB free
             </p>
+            <na-chart
+              bind-options="{height: 250}"
+              bind-data="history.memory"
+            ></na-chart>
           </st-panel>
 
           <st-panel icon="cpu" title="CPU Usage" on-refresh="refreshCpu()">
@@ -186,6 +190,7 @@
     </template>
     <script type="module">
       import { ref, onInit, domReady, mount } from "@lithium/web";
+      import "@sodium/na-chart";
 
       const oneMB = 1048576;
       const oneGB = oneMB * 1024;
@@ -195,6 +200,7 @@
         const cpuUsage = ref({
           loadAverage: [],
         });
+
         const memoryUsage = ref({});
 
         const networkUsage = ref({
@@ -207,6 +213,15 @@
           used: 0,
           available: 0,
           mountpoint: "/",
+        });
+
+        const history = ref({
+          memory: {
+            datasets: [{ values: [] }],
+          },
+          cpu: {
+            datasets: [{ values: [] }],
+          },
         });
 
         function refreshDisk() {
@@ -225,11 +240,14 @@
           stat("/network", networkUsage);
         }
 
-        function refresh() {
-          refreshMemory();
-          refreshDisk();
-          refreshCpu();
-          refreshNetwork();
+        async function refresh() {
+          await refreshMemory();
+          await refreshDisk();
+          await refreshCpu();
+          await refreshNetwork();
+
+          history.value.memory.datasets[0].values.push(memoryUsage.used / oneMB);
+          history.value.cpu.datasets[0].values.push(cpuUsage.loadAverage[0]);
         }
 
         function toDecimal(value) {
@@ -241,7 +259,10 @@
           target.value = await req.json();
         }
 
-        onInit(refresh);
+        onInit(() => {
+          refresh();
+          setInterval(refresh, 3000);
+        });
 
         return {
           refresh,
