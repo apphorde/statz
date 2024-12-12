@@ -201,7 +201,11 @@
           loadAverage: [],
         });
 
-        const memoryUsage = ref({});
+        const memoryUsage = ref({
+          used: 0,
+          total: 0,
+          free: 0,
+        });
 
         const networkUsage = ref({
           download: 0,
@@ -279,6 +283,7 @@
           diskUsage,
           networkUsage,
           memoryUsage,
+          history,
           process,
           oneMB,
           oneGB,
