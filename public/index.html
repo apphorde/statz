@@ -56,8 +56,9 @@
               {{ toDecimal(memoryUsage.free / oneMB) }} MB free
             </p>
             <na-chart
-              bind-options="{height: 250}"
+              bind-options="{animate:false, truncateLegends:true}"
               bind-inputs="history.memory"
+              class="block bg-white rounded"
             ></na-chart>
           </st-panel>
 
@@ -75,6 +76,11 @@
                 style-width="`${cpuUsage.loadAverage[0]}%`"
               ></div>
             </div>
+            <na-chart
+              bind-options="{animate:false}"
+              bind-inputs="history.cpu"
+              class="block bg-white rounded"
+            ></na-chart>
           </st-panel>
         </div>
 
@@ -129,63 +135,6 @@
             </tbody>
           </table>
         </st-panel>
-
-        <!-- div class="mb-6 bg-white/10 rounded-lg shadow-md overflow-hidden">
-          <div class="p-6">
-            <h2 class="text-xl font-semibold text-gray-800 mb-2">
-              Running Processes
-            </h2>
-            <p class="text-sm text-gray-600 mb-4">
-              A list of currently running processes on the server.
-            </p>
-          </div>
-          <div class="overflow-x-auto">
-            <table class="w-full">
-              <thead class="bg-white/20">
-                <tr>
-                  <th
-                    class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
-                  >
-                    PID
-                  </th>
-                  <th
-                    class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
-                  >
-                    Name
-                  </th>
-                  <th
-                    class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
-                  >
-                    CPU Usage
-                  </th>
-                  <th
-                    class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
-                  >
-                    Memory Usage
-                  </th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-gray-200">
-                <template>
-                  <tr key="{process.pid}">
-                    <td class="px-6 py-4 whitespace-nowrap text-sm">
-                      {{process.pid}}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm">
-                      {{process.name}}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm">
-                      {{process.cpu}}%
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm">
-                      {{process.memory}} MB
-                    </td>
-                  </tr>
-                </template>
-              </tbody>
-            </table>
-          </div>
-        </div -->
       </div>
     </template>
     <script type="module">
@@ -221,12 +170,12 @@
 
         const history = ref({
           memory: {
-            labels: [],
-            datasets: [{ values: [] }],
+            labels: Array(100).fill(''),
+            datasets: [{ values: Array(100).fill(0) }],
           },
           cpu: {
-            labels: [],
-            datasets: [{ values: [] }],
+            labels: Array(100).fill(''),
+            datasets: [{ values: Array(100).fill(0) }],
           },
         });
 
@@ -246,6 +195,10 @@
           return stat("/network", networkUsage);
         }
 
+        function trimArray(array, size = 100) {
+          return array.slice(-size);
+        }
+
         async function refresh() {
           await refreshMemory();
           await refreshDisk();
@@ -259,8 +212,17 @@
           data.memory.datasets[0].values.push(memoryUsage.value.used / oneMB);
           data.memory.labels.push(time);
 
+          data.memory.datasets[0].values = trimArray(
+            data.memory.datasets[0].values
+          );
+
+          data.memory.labels = trimArray(data.memory.labels);
+
           data.cpu.datasets[0].values.push(cpuUsage.value.loadAverage[0]);
           data.cpu.labels.push(time);
+
+          data.cpu.datasets[0].values = trimArray(data.cpu.datasets[0].values);
+          data.cpu.labels = trimArray(data.cpu.labels);
 
           history.value = { ...data };
         }
