@@ -257,10 +257,10 @@
           const time = now.getHours() + ":" + now.getMinutes();
 
           data.memory.datasets[0].values.push(memoryUsage.value.used / oneMB);
-          data.memory.datasets[0].labels.push(time);
+          data.memory.labels.push(time);
 
           data.cpu.datasets[0].values.push(cpuUsage.value.loadAverage[0]);
-          data.cpu.datasets[0].labels.push(time);
+          data.cpu.labels.push(time);
 
           history.value = { ...data };
         }
