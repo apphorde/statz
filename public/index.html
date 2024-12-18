@@ -19,11 +19,9 @@
   <body class="bg-gray-700 text-white">
     <template>
       <div class="p-8 min-h-screen flex flex-col items-center">
-        <h1 class="flex items-center">
-          <span class="text-3xl font-bold mb-6 text-gray-100"
-            >Server Dashboard</span
-          >
-          <button click="autoUpdate()">
+        <h1 class="flex items-center justify-between w-full mb-6">
+          <span class="text-3xl font-bold text-gray-100">Server Dashboard</span>
+          <button on-click="autoUpdate()">
             <lucide-icon icon="refresh-cw"></lucide-icon>
           </button>
         </h1>
@@ -65,7 +63,7 @@
             <na-chart
               bind-options="{animate:false, truncateLegends:true}"
               bind-inputs="history.memory"
-              class="block bg-white rounded"
+              class="block bg-white rounded overflow-hidden"
             ></na-chart>
           </st-panel>
 
@@ -77,7 +75,7 @@
               <span> {{ cpuUsage.loadAverage[1] }} </span>
               <span> {{ cpuUsage.loadAverage[2] }} </span>
             </div>
-            <div class="bg-gray-200 rounded-full h-2 mb-4">
+            <div class="bg-gray-200 rounded-full h-2 mb-6">
               <div
                 class="bg-red-500 rounded-full h-2"
                 style-width="`${cpuUsage.loadAverage[0]}%`"
@@ -86,7 +84,7 @@
             <na-chart
               bind-options="{animate:false}"
               bind-inputs="history.cpu"
-              class="block bg-white rounded"
+              class="block bg-white rounded overflow-hidden"
             ></na-chart>
           </st-panel>
         </div>
