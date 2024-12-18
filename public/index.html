@@ -19,7 +19,14 @@
   <body class="bg-gray-700 text-white">
     <template>
       <div class="p-8 min-h-screen flex flex-col items-center">
-        <h1 class="text-3xl font-bold mb-6 text-gray-100">Server Dashboard</h1>
+        <h1 class="flex items-center">
+          <span class="text-3xl font-bold mb-6 text-gray-100"
+            >Server Dashboard</span
+          >
+          <button click="autoUpdate()">
+            <lucide-icon icon="refresh-cw"></lucide-icon>
+          </button>
+        </h1>
 
         <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-6 w-full">
           <st-panel
@@ -70,7 +77,7 @@
               <span> {{ cpuUsage.loadAverage[1] }} </span>
               <span> {{ cpuUsage.loadAverage[2] }} </span>
             </div>
-            <div class="bg-gray-200 rounded-full h-2">
+            <div class="bg-gray-200 rounded-full h-2 mb-4">
               <div
                 class="bg-red-500 rounded-full h-2"
                 style-width="`${cpuUsage.loadAverage[0]}%`"
@@ -170,16 +177,21 @@
           mountpoint: "/",
         });
 
-        const history = ref({
-          memory: {
-            labels: Array(100).fill(""),
-            datasets: [{ values: Array(100).fill(0) }],
-          },
-          cpu: {
-            labels: Array(100).fill(""),
-            datasets: [{ values: Array(100).fill(0) }],
-          },
-        });
+        const previousHistory = localStorage.getItem("history");
+        const history = ref(
+          previousHistory
+            ? JSON.parse(previousHistory)
+            : {
+                memory: {
+                  labels: Array(100).fill(""),
+                  datasets: [{ values: Array(100).fill(0) }],
+                },
+                cpu: {
+                  labels: Array(100).fill(""),
+                  datasets: [{ values: Array(100).fill(0) }],
+                },
+              }
+        );
 
         function refreshDisk() {
           return stat("/disk", diskUsage);
@@ -227,6 +239,7 @@
           data.cpu.labels = trimArray(data.cpu.labels);
 
           history.value = { ...data };
+          localStorage.setItem("history", JSON.stringify(history.value));
         }
 
         function toDecimal(value) {
@@ -236,6 +249,14 @@
         async function stat(apiPath, target) {
           const req = await fetch(apiPath);
           target.value = await req.json();
+        }
+
+        async function autoUpdate() {
+          const req = await fetch("/auto-update");
+
+          if (req.ok) {
+            window.location.reload();
+          }
         }
 
         onInit(() => {
@@ -250,6 +271,7 @@
           refreshMemory,
           refreshNetwork,
           toDecimal,
+          autoUpdate,
           cpuUsage,
           diskUsage,
           networkUsage,

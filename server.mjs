@@ -1,6 +1,7 @@
 import { createReadStream, existsSync } from "fs";
 import { createServer } from "http";
 import { extname, join, normalize } from "path";
+import { spawnSync as sh } from "node:child_process";
 import * as stats from "./stats.mjs";
 
 const cwd = process.cwd();
@@ -18,14 +19,15 @@ function notFound(res) {
 }
 
 createServer(function (request, response) {
-  response.addListener("finish", () =>
-    console.log(
-      new Date().toISOString(),
-      request.method,
-      request.url,
-      response.statusCode
-    )
-  );
+  process.env.DEBUG &&
+    response.addListener("finish", () =>
+      console.log(
+        new Date().toISOString(),
+        request.method,
+        request.url,
+        response.statusCode
+      )
+    );
 
   if (request.url === "/favicon.ico" || request.method !== "GET") {
     return notFound(response);
@@ -37,6 +39,19 @@ createServer(function (request, response) {
   if (url.pathname === "/") {
     response.writeHead(302, { location: "/ui/index.html" });
     response.end();
+    return;
+  }
+
+  if (url.pathname === "/auto-update") {
+    const update = sh("git", ["pull", "--rebase"]);
+
+    if (update.status !== 0) {
+      response.writeHead(500).end();
+    } else {
+      response.end();
+      setTimeout(() => process.exit(0), 1000);
+    }
+
     return;
   }
 
