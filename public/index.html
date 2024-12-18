@@ -18,10 +18,10 @@
   </head>
   <body class="bg-gray-700 text-white">
     <template>
-      <div class="p-8 min-h-screen">
+      <div class="p-8 min-h-screen flex flex-col items-center">
         <h1 class="text-3xl font-bold mb-6 text-gray-100">Server Dashboard</h1>
 
-        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-6">
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-6 w-full">
           <st-panel
             icon="network"
             title="Network Usage"
@@ -85,7 +85,7 @@
         </div>
 
         <st-panel
-          class="mb-6"
+          class="mb-6 w-full block"
           icon="hard-drive"
           title="Disk Usage"
           on-refresh="refreshDisk()"
