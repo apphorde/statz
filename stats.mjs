@@ -62,10 +62,19 @@ export function disk() {
     .sort((a, b) => (a.device < b.device ? -1 : 1));
 }
 
+const psMatcher =
+  /^(?<pid>)\s+(?<user>)\s+(?<pr>)\s+(?<ni>)\s+(?<virt>)\s+(?<res>)\s+(?<shr>)\s+(?<s>)\s+(?<cpu>)\s+(?<mem>)\s+(?<time>)\s+(?<command>)$/;
+
 export function ps() {
   const output = sh("top", ["-b", "-n1", "-Em", "-o", "%CPU"], {
     encoding: "utf8",
   });
 
-  return output.stdout.trim();
+  const lines = output.stdout.trim().split("\n").slice(7, 20).filter(Boolean);
+
+  return lines.map((line) => {
+    // PID USER PR NI VIRT RES SHR S %CPU %MEM TIME+ COMMAND
+    const { pid, user, cpu, mem, time, command } = psMatcher.exec(line).groups;
+    return { pid, user, cpu, mem, time, command };
+  });
 }
