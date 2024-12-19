@@ -75,7 +75,7 @@ export function ps() {
   return lines
     .map((line) => {
       // PID USER PR NI VIRT RES SHR S %CPU %MEM TIME+ COMMAND
-      const groups = psMatcher.exec(line).groups;
+      const groups = psMatcher.exec(line)?.groups;
 
       if (groups) {
         const { pid, user, cpu, mem, time, command } = groups;
