@@ -63,7 +63,7 @@ export function disk() {
 }
 
 const psMatcher =
-  /^(?<pid>)\s+(?<user>)\s+(?<pr>)\s+(?<ni>)\s+(?<virt>)\s+(?<res>)\s+(?<shr>)\s+(?<s>)\s+(?<cpu>)\s+(?<mem>)\s+(?<time>)\s+(?<command>)$/;
+  /^(?<pid>.+)\s+(?<user>.+)\s+(?<pr>.+)\s+(?<ni>.+)\s+(?<virt>.+)\s+(?<res>.+)\s+(?<shr>.+)\s+(?<s>.+)\s+(?<cpu>.+)\s+(?<mem>.+)\s+(?<time>.+)\s+(?<command>.+)$/;
 
 export function ps() {
   const output = sh("top", ["-b", "-n1", "-Em", "-o", "%CPU"], {
