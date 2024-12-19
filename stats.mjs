@@ -72,9 +72,15 @@ export function ps() {
 
   const lines = output.stdout.trim().split("\n").slice(7, 20).filter(Boolean);
 
-  return lines.map((line) => {
-    // PID USER PR NI VIRT RES SHR S %CPU %MEM TIME+ COMMAND
-    const { pid, user, cpu, mem, time, command } = psMatcher.exec(line).groups;
-    return { pid, user, cpu, mem, time, command };
-  });
+  return lines
+    .map((line) => {
+      // PID USER PR NI VIRT RES SHR S %CPU %MEM TIME+ COMMAND
+      const groups = psMatcher.exec(line).groups;
+
+      if (groups) {
+        const { pid, user, cpu, mem, time, command } = groups;
+        return { pid, user, cpu, mem, time, command };
+      }
+    })
+    .filter(Boolean);
 }
