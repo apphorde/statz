@@ -61,3 +61,11 @@ export function disk() {
     })
     .sort((a, b) => (a.device < b.device ? -1 : 1));
 }
+
+export function ps() {
+  const output = sh("top", ["-b", "-n1", "-Em", "-o", "%CPU"], {
+    encoding: "utf8",
+  });
+
+  return output.stdout.trim();
+}

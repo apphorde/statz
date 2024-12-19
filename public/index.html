@@ -78,11 +78,10 @@
             <div class="bg-gray-200 rounded-full h-2 mb-6">
               <div
                 class="bg-red-500 rounded-full h-2"
-                style-width="`${cpuUsage.loadAverage[0]}%`"
+                style-width="`${cpuUsage.loadAverage[0] / cpuUsage.cpus.length * 100}%`"
               ></div>
             </div>
             <na-chart
-              bind-options="{animate:false}"
               bind-inputs="history.cpu"
               class="block bg-white rounded overflow-hidden"
             ></na-chart>
@@ -142,6 +141,17 @@
             </table>
           </div>
         </st-panel>
+
+        <st-panel
+          class="mb-6 w-full block"
+          icon="hard-drive"
+          title="Top processes"
+          on-refresh="refreshProcesses()"
+        >
+          <div class="w-full overflow-x-auto whitespace-pre font-mono">
+            {{ ps }}
+          </div>
+        </st-panel>
       </div>
     </template>
     <script type="module">
@@ -152,7 +162,7 @@
       const oneGB = oneMB * 1024;
 
       function setup() {
-        const process = ref({});
+        const ps = ref("");
         const cpuUsage = ref({
           loadAverage: [],
         });
@@ -207,6 +217,10 @@
           return stat("/network", networkUsage);
         }
 
+        function refreshProcesses() {
+          return stat("/ps", ps);
+        }
+
         function trimArray(array, size = 100) {
           return array.slice(-size);
         }
@@ -216,6 +230,7 @@
           await refreshDisk();
           await refreshCpu();
           await refreshNetwork();
+          await refreshProcesses();
 
           const data = history.value;
           const now = new Date();
@@ -268,12 +283,14 @@
           refreshDisk,
           refreshMemory,
           refreshNetwork,
+          refreshProcesses,
           toDecimal,
           autoUpdate,
           cpuUsage,
           diskUsage,
           networkUsage,
           memoryUsage,
+          ps,
           history,
           process,
           oneMB,
