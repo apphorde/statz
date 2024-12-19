@@ -49,7 +49,7 @@ createServer(function (request, response) {
       response.writeHead(500).end();
     } else {
       response.end();
-      setTimeout(() => process.exit(0), 1000);
+      setTimeout(() => process.exit(1), 1000);
     }
 
     return;
