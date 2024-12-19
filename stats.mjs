@@ -63,7 +63,7 @@ export function disk() {
 }
 
 const psMatcher =
-  /^(?<pid>\S+)\s+(?<user>\S+)\s+(?<pr>\S+)\s+(?<ni>\S+)\s+(?<virt>\S+)\s+(?<res>\S+)\s+(?<shr>\S+)\s+(?<s>\S+)\s+(?<cpu>\S+)\s+(?<mem>\S+)\s+(?<time>\S+)\s+(?<command>\S+)$/;
+  /^(?<pid>\S+)\s+(?<user>\S+)\s+(?<pr>\S+)\s+(?<ni>\S+)\s+(?<virt>\S+)\s+(?<res>\S+)\s+(?<shr>\S+)\s+(?<s>\S+)\s+(?<cpu>\S+)\s+(?<mem>\S+)\s+(?<time>\S+)\s+(?<command>.+)$/;
 
 export function ps() {
   const output = sh("top", ["-b", "-n1", "-Em", "-o", "%CPU"], {
@@ -75,7 +75,7 @@ export function ps() {
   return lines
     .map((line) => {
       // PID USER PR NI VIRT RES SHR S %CPU %MEM TIME+ COMMAND
-      const groups = psMatcher.exec(line)?.groups;
+      const groups = psMatcher.exec(line.trim())?.groups;
 
       if (groups) {
         const { pid, user, cpu, mem, time, command } = groups;
