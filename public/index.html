@@ -48,7 +48,7 @@
             title="Memory Usage"
             on-refresh="refreshMemory()"
           >
-            <div class="text-2xl font-bold">
+            <div class="text-2xl font-bold flex items-center justify-between">
               <span
                 >{{ toDecimal(memoryUsage.used / oneMB) }} MB / {{
                 toDecimal(memoryUsage.total / oneMB) }} MB</span
