@@ -18,16 +18,17 @@
   </head>
   <body class="bg-gray-700 text-white">
     <template>
-      <div class="p-8 min-h-screen flex flex-col items-center">
+      <div class="p-8 min-h-screen flex flex-col items-stretch">
         <h1 class="flex items-center justify-between w-full mb-6">
           <span class="text-3xl font-bold text-gray-100">Server Dashboard</span>
-          <button on-click="autoUpdate()">
+          <button class="cursor-pointer" on-click="autoUpdate()">
             <lucide-icon icon="refresh-cw"></lucide-icon>
           </button>
         </h1>
 
-        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-6 w-full">
-          <st-panel
+        <div class="grid gap-6 md:grid-cols-2 mb-6 w-full">
+          <!-- lg:grid-cols-3 -->
+          <!-- st-panel
             icon="network"
             title="Network Usage"
             on-refresh="refreshNetwork()"
@@ -40,7 +41,7 @@
               {{ networkUsage.upload | 0 }} Mbps
             </div>
             <p class="text-xs text-gray-500">↑ Upload</p>
-          </st-panel>
+          </st-panel -->
 
           <st-panel
             icon="memory-stick"
@@ -48,8 +49,13 @@
             on-refresh="refreshMemory()"
           >
             <div class="text-2xl font-bold">
-              {{ toDecimal(memoryUsage.used / oneMB) }} MB / {{
-              toDecimal(memoryUsage.total / oneMB) }} MB
+              <span
+                >{{ toDecimal(memoryUsage.used / oneMB) }} MB / {{
+                toDecimal(memoryUsage.total / oneMB) }} MB</span
+              >
+              <span class="text-xs text-gray-300">
+                {{ toDecimal(memoryUsage.free / oneMB) }} MB free
+              </span>
             </div>
             <div class="mt-2 bg-gray-200 rounded-full h-2">
               <div
@@ -57,13 +63,11 @@
                 style-width="`${ (memoryUsage.used / memoryUsage.total) * 100}%`"
               ></div>
             </div>
-            <p class="text-xs text-gray-300 mt-2">
-              {{ toDecimal(memoryUsage.free / oneMB) }} MB free
-            </p>
+
             <na-chart
               bind-options="{animate:false, truncateLegends:true}"
               bind-inputs="history.memory"
-              class="block bg-white rounded overflow-hidden"
+              class="block bg-white rounded overflow-hidden mt-6"
             ></na-chart>
           </st-panel>
 
