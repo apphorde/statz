@@ -66,6 +66,7 @@
           defineProp("total");
           defineProp("used");
           defineProp("free");
+          defineProp("unit");
         }
       </script>
     </template>
@@ -172,7 +173,7 @@
                     </td>
                     <td>
                       <st-usage
-                        unit="disk.total.slice(-1) + 'B'"
+                        prop-unit="disk.total.slice(-1) + 'B'"
                         prop-used="parseInt(disk.used)"
                         prop-total="parseInt(disk.total)"
                         prop-free="parseInt(disk.available)"
