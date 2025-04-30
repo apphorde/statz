@@ -27,7 +27,7 @@
         export default function () {
           defineProp("icon");
           defineProp("title");
-          onRefresh = defineEvent("refresh");
+          const onRefresh = defineEvent("refresh");
 
           return { onRefresh };
         }
