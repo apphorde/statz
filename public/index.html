@@ -43,6 +43,32 @@
       </div>
     </template>
 
+    <template component="st-usage">
+      <div class="text-2xl font-bold flex items-center justify-between">
+        <span
+          >{{ toDecimal(used) }} {{ unit }} / {{toDecimal(total) }} {{ unit
+          }}</span
+        >
+        <span class="text-xs text-gray-300"
+          >{{ toDecimal(free) }} {{ unit }} free</span
+        >
+      </div>
+      <div class="mt-2 bg-gray-200 rounded-full h-2">
+        <div
+          class="bg-green-500 rounded-full h-2"
+          style-width="`${ (used / total) * 100}%`"
+        ></div>
+      </div>
+      <script setup>
+        import { defineProp } from "@li3/web";
+
+        export default function stUsage() {
+          defineProp("total");
+          defineProp("used");
+          defineProp("free");
+        }
+      </script>
+    </template>
     <template app>
       <div class="p-8 min-h-screen flex flex-col items-stretch">
         <h1 class="flex items-center justify-between w-full mb-6">
@@ -74,22 +100,12 @@
             title="Memory Usage"
             on-refresh="refreshMemory()"
           >
-            <div class="text-2xl font-bold flex items-center justify-between">
-              <span
-                >{{ toDecimal(memoryUsage.used / oneMB) }} MB / {{
-                toDecimal(memoryUsage.total / oneMB) }} MB</span
-              >
-              <span class="text-xs text-gray-300">
-                {{ toDecimal(memoryUsage.free / oneMB) }} MB free
-              </span>
-            </div>
-            <div class="mt-2 bg-gray-200 rounded-full h-2">
-              <div
-                class="bg-green-500 rounded-full h-2"
-                style-width="`${ (memoryUsage.used / memoryUsage.total) * 100}%`"
-              ></div>
-            </div>
-
+            <st-usage
+              unit="MB"
+              prop-used="memoryUsage.used / oneMB"
+              prop-total="memoryUsage.total / oneMB"
+              prop-free="memoryUsage.free / oneMB"
+            ></st-usage>
             <na-chart
               bind-options="{animate:false, truncateLegends:true}"
               bind-inputs="history.memory"
@@ -131,16 +147,6 @@
                   <th
                     class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
                   >
-                    Use
-                  </th>
-                  <th
-                    class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
-                  >
-                    Free
-                  </th>
-                  <th
-                    class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
-                  >
                     Device
                   </th>
                   <th
@@ -148,22 +154,29 @@
                   >
                     Mounted on
                   </th>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
+                  >
+                    Use
+                  </th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-200">
                 <template for="disk of diskUsage">
                   <tr>
                     <td class="p-2 whitespace-nowrap text-sm">
-                      {{ disk.used }} / {{ disk.total }}
-                    </td>
-                    <td class="p-2 whitespace-nowrap text-sm">
-                      {{ disk.available }}
-                    </td>
-                    <td class="p-2 whitespace-nowrap text-sm">
                       {{ disk.device }}
                     </td>
                     <td class="p-2 whitespace-nowrap text-sm">
                       {{ disk.mountpoint }}
+                    </td>
+                    <td>
+                      <st-usage
+                        unit="disk.total.slice(-1) + 'B'"
+                        prop-used="parseInt(disk.used)"
+                        prop-total="parseInt(disk.total)"
+                        prop-free="parseInt(disk.available)"
+                      ></st-usage>
                     </td>
                   </tr>
                 </template>
@@ -314,29 +327,19 @@
             const now = new Date();
             const time = now.getHours() + ":" + now.getMinutes();
 
-            data.memory.datasets[0].values = trimArray(
-              [
-                ...data.memory.datasets[0].values,
-                memoryUsage.value.used / oneMB
-              ]
-            );
-
-            data.memory.labels = trimArray([
-              ...data.memory.labels,
-              time,
+            data.memory.datasets[0].values = trimArray([
+              ...data.memory.datasets[0].values,
+              memoryUsage.value.used / oneMB,
             ]);
 
-            data.cpu.datasets[0].values = trimArray(
-              [
-                ...data.cpu.datasets[0].values,
-                cpuUsage.value.loadAverage[0]
-              ]
-            );
+            data.memory.labels = trimArray([...data.memory.labels, time]);
 
-            data.cpu.labels = trimArray([
-              ...data.cpu.labels,
-              time
+            data.cpu.datasets[0].values = trimArray([
+              ...data.cpu.datasets[0].values,
+              cpuUsage.value.loadAverage[0],
             ]);
+
+            data.cpu.labels = trimArray([...data.cpu.labels, time]);
 
             history.value = { ...data };
             localStorage.setItem("history", JSON.stringify(history.value));
