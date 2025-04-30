@@ -8,16 +8,42 @@
     <script type="importmap">
       {
         "imports": {
-          "@lithium/": "https://--lithium.static.apphor.de/",
+          "@li3/": "https://--li3.static.apphor.de/",
           "@sodium/": "https://--sodium.static.apphor.de/",
           "@lucide/": "https://--lucide.static.apphor.de/"
         }
       }
     </script>
-    <script type="module" src="/ui/components.mjs"></script>
+    <script type="module">
+      import "@li3/web";
+      import "@lucide/lucide-icon";
+    </script>
   </head>
   <body class="bg-gray-700 text-white">
-    <template>
+    <template component="st-panel">
+      <script setup>
+        import { defineProp, defineEvent } from "@li3/web";
+
+        export default function () {
+          defineProp("icon");
+          defineProp("title");
+          onRefresh = defineEvent("refresh");
+
+          return { onRefresh };
+        }
+      </script>
+      <div class="bg-white/10 p-6 rounded-lg shadow-md text-gray-200 h-full">
+        <div class="flex items-center justify-between mb-2">
+          <h2 class="text-sm font-medium">{{ title }}</h2>
+          <button on-click="onRefresh()">
+            <lucide-icon prop-icon="icon"></lucide-icon>
+          </button>
+        </div>
+        <slot></slot>
+      </div>
+    </template>
+
+    <template app>
       <div class="p-8 min-h-screen flex flex-col items-stretch">
         <h1 class="flex items-center justify-between w-full mb-6">
           <span class="text-3xl font-bold text-gray-100">Server Dashboard</span>
@@ -204,155 +230,153 @@
           </div>
         </st-panel>
       </div>
-    </template>
-    <script type="module">
-      import { ref, onInit, domReady, mount } from "@lithium/web";
-      import "@sodium/na-chart";
 
-      const oneMB = 1048576;
-      const oneGB = oneMB * 1024;
+      <script setup>
+        import "@sodium/na-chart";
+        import { ref, onInit } from "@li3/web";
 
-      function setup() {
-        const ps = ref("");
-        const cpuUsage = ref({
-          cpus: [],
-          loadAverage: [],
-        });
+        const oneMB = 1048576;
+        const oneGB = oneMB * 1024;
 
-        const memoryUsage = ref({
-          used: 0,
-          total: 0,
-          free: 0,
-        });
+        export default function statsApp() {
+          const ps = ref("");
+          const cpuUsage = ref({
+            cpus: [],
+            loadAverage: [],
+          });
 
-        const networkUsage = ref({
-          download: 0,
-          upload: 0,
-        });
+          const memoryUsage = ref({
+            used: 0,
+            total: 0,
+            free: 0,
+          });
 
-        const diskUsage = ref({
-          total: 0,
-          used: 0,
-          available: 0,
-          mountpoint: "/",
-        });
+          const networkUsage = ref({
+            download: 0,
+            upload: 0,
+          });
 
-        const previousHistory = localStorage.getItem("history");
-        const history = ref(
-          previousHistory
-            ? JSON.parse(previousHistory)
-            : {
-                memory: {
-                  labels: Array(100).fill(""),
-                  datasets: [{ values: Array(100).fill(0) }],
-                },
-                cpu: {
-                  labels: Array(100).fill(""),
-                  datasets: [{ values: Array(100).fill(0) }],
-                },
-              }
-        );
+          const diskUsage = ref({
+            total: 0,
+            used: 0,
+            available: 0,
+            mountpoint: "/",
+          });
 
-        function refreshDisk() {
-          return stat("/disk", diskUsage);
-        }
-
-        function refreshMemory() {
-          return stat("/memory", memoryUsage);
-        }
-
-        function refreshCpu() {
-          return stat("/cpu", cpuUsage);
-        }
-
-        function refreshNetwork() {
-          return stat("/network", networkUsage);
-        }
-
-        function refreshProcesses() {
-          return stat("/ps", ps);
-        }
-
-        function trimArray(array, size = 100) {
-          return array.slice(-size);
-        }
-
-        async function refresh() {
-          await refreshMemory();
-          await refreshDisk();
-          await refreshCpu();
-          await refreshNetwork();
-          await refreshProcesses();
-
-          const data = history.value;
-          const now = new Date();
-          const time = now.getHours() + ":" + now.getMinutes();
-
-          data.memory.datasets[0].values.push(memoryUsage.value.used / oneMB);
-          data.memory.labels.push(time);
-
-          data.memory.datasets[0].values = trimArray(
-            data.memory.datasets[0].values
+          const previousHistory = localStorage.getItem("history");
+          const history = ref(
+            previousHistory
+              ? JSON.parse(previousHistory)
+              : {
+                  memory: {
+                    labels: Array(100).fill(""),
+                    datasets: [{ values: Array(100).fill(0) }],
+                  },
+                  cpu: {
+                    labels: Array(100).fill(""),
+                    datasets: [{ values: Array(100).fill(0) }],
+                  },
+                }
           );
 
-          data.memory.labels = trimArray(data.memory.labels);
-
-          data.cpu.datasets[0].values.push(cpuUsage.value.loadAverage[0]);
-          data.cpu.labels.push(time);
-
-          data.cpu.datasets[0].values = trimArray(data.cpu.datasets[0].values);
-          data.cpu.labels = trimArray(data.cpu.labels);
-
-          history.value = { ...data };
-          localStorage.setItem("history", JSON.stringify(history.value));
-        }
-
-        function toDecimal(value) {
-          return Number(value).toFixed(2);
-        }
-
-        async function stat(apiPath, target) {
-          const req = await fetch(apiPath);
-          target.value = await req.json();
-        }
-
-        async function autoUpdate() {
-          const req = await fetch("/auto-update");
-
-          if (req.ok) {
-            window.location.reload();
+          function refreshDisk() {
+            return stat("/disk", diskUsage);
           }
+
+          function refreshMemory() {
+            return stat("/memory", memoryUsage);
+          }
+
+          function refreshCpu() {
+            return stat("/cpu", cpuUsage);
+          }
+
+          function refreshNetwork() {
+            return stat("/network", networkUsage);
+          }
+
+          function refreshProcesses() {
+            return stat("/ps", ps);
+          }
+
+          function trimArray(array, size = 100) {
+            return array.slice(-size);
+          }
+
+          async function refresh() {
+            await refreshMemory();
+            await refreshDisk();
+            await refreshCpu();
+            await refreshNetwork();
+            await refreshProcesses();
+
+            const data = history.value;
+            const now = new Date();
+            const time = now.getHours() + ":" + now.getMinutes();
+
+            data.memory.datasets[0].values.push(memoryUsage.value.used / oneMB);
+            data.memory.labels.push(time);
+
+            data.memory.datasets[0].values = trimArray(
+              data.memory.datasets[0].values
+            );
+
+            data.memory.labels = trimArray(data.memory.labels);
+
+            data.cpu.datasets[0].values.push(cpuUsage.value.loadAverage[0]);
+            data.cpu.labels.push(time);
+
+            data.cpu.datasets[0].values = trimArray(
+              data.cpu.datasets[0].values
+            );
+            data.cpu.labels = trimArray(data.cpu.labels);
+
+            history.value = { ...data };
+            localStorage.setItem("history", JSON.stringify(history.value));
+          }
+
+          function toDecimal(value) {
+            return Number(value).toFixed(2);
+          }
+
+          async function stat(apiPath, target) {
+            const req = await fetch(apiPath);
+            target.value = await req.json();
+          }
+
+          async function autoUpdate() {
+            const req = await fetch("/auto-update");
+
+            if (req.ok) {
+              window.location.reload();
+            }
+          }
+
+          onInit(() => {
+            refresh();
+            setInterval(refresh, 5000);
+          });
+
+          return {
+            refresh,
+            refreshCpu,
+            refreshDisk,
+            refreshMemory,
+            refreshNetwork,
+            refreshProcesses,
+            toDecimal,
+            autoUpdate,
+            cpuUsage,
+            diskUsage,
+            networkUsage,
+            memoryUsage,
+            ps,
+            history,
+            oneMB,
+            oneGB,
+          };
         }
-
-        onInit(() => {
-          refresh();
-          setInterval(refresh, 5000);
-        });
-
-        return {
-          refresh,
-          refreshCpu,
-          refreshDisk,
-          refreshMemory,
-          refreshNetwork,
-          refreshProcesses,
-          toDecimal,
-          autoUpdate,
-          cpuUsage,
-          diskUsage,
-          networkUsage,
-          memoryUsage,
-          ps,
-          history,
-          oneMB,
-          oneGB,
-        };
-      }
-
-      domReady().then(function () {
-        const template = document.querySelector("template");
-        mount("body", { template, setup });
-      });
-    </script>
+      </script>
+    </template>
   </body>
 </html>

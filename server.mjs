@@ -79,6 +79,6 @@ createServer(function (request, response) {
   }
 
   notFound(response);
-}).listen(port, "0.0.0.0", () => {
+}).listen(port, () => {
   console.log("Service started on http://localhost:" + port);
 });
