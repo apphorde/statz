@@ -1,6 +1,5 @@
 import "@sodium/na-chart";
 import { ref, onInit } from "@li3/web";
-import { toDecimal } from "./index.mjs";
 
 const oneMB = 1048576;
 
