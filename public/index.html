@@ -24,18 +24,30 @@
     <template component="st-panel">
       <script setup>
         import { defineProp, defineEvent } from "@li3/web";
-        import { signal } from "@li3/reactive";
+        import { signal, effect } from "@li3/reactive";
 
         export default function () {
           defineProp("icon");
           defineProp("title");
+          const filters = defineProp("filters", {
+            default() {
+              return [];
+            },
+          });
+
           const filterToggles = signal({});
           const onFilter = defineEvent("filter");
           const onRefresh = defineEvent("refresh");
 
+          effect(() => {
+            if (filters.value) {
+              filterToggles.value = {};
+            }
+          });
+
           function toggleFilter(f) {
-            filters.value[f] = !filters.value[f];
-            const t = filters.value;
+            filterToggles.value[f] = !filterToggles.value[f];
+            const t = filterToggles.value;
             onFilter(Object.keys(t).filter((k) => t[k]));
           }
 
