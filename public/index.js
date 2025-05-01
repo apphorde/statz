@@ -172,6 +172,10 @@ export default function statsApp() {
 
   const diskUsageFiltered = effect(() => {
     const t = diskTypes.value;
+    if (!t?.length) {
+      return diskUsage.value;
+    }
+
     return diskUsage.value.filter((disk) => t.includes(disk.type));
   });
 

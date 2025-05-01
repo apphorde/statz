@@ -220,7 +220,7 @@
           title="Disk Usage"
           on-refresh="refreshDisk()"
           prop-filters="fileSystems"
-          on-filter="onDiskFilter($event)"
+          on-filter="onDiskFilter($event.detail)"
         >
           <div class="w-full">
             <template for="disk of diskUsage">
