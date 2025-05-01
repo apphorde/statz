@@ -29,7 +29,7 @@
         export default function () {
           defineProp("icon");
           defineProp("title");
-          defineProp("filteredBy");
+          defineProp("filteredby");
 
           const filters = defineProp("filters", {
             default() {
@@ -49,8 +49,8 @@
             <span class="mr-4"> {{ title }} </span>
             <template for="filter of filters">
               <button
-                class="text-sm border bg-gray-800 p-1 mr-1"
-                class-bg-green-400="filteredBy === filter"
+                class="text-sm border bg-gray-700 p-1 mr-1 rounded-sm"
+                class-bg-green-400="filteredby === filter"
                 on-click="onFilter(filter)"
                 bind-inner-text="filter"
               ></button>
