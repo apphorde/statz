@@ -168,6 +168,7 @@ export default function statsApp() {
     refreshNetwork,
     refreshProcesses,
     toDecimal,
+    toMB,
     autoUpdate,
     cpuUsage,
     diskUsage,
@@ -175,6 +176,5 @@ export default function statsApp() {
     memoryUsage,
     ps,
     history,
-    oneMB,
   };
 }
