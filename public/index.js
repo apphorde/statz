@@ -135,7 +135,14 @@ export default function statsApp() {
   const { ps, refreshProcesses } = useProcesses();
   const { history, refreshHistory } = useHistory({ memoryUsage, cpuUsage });
 
+  const autoRefresh = ref(true);
+  function toggleRefresh() {
+    autoRefresh.value = !autoRefresh.value;
+  }
+
   async function refresh() {
+    if (!autoRefresh.value) return;
+
     await Promise.all([
       refreshMemory(),
       refreshDisk(),
@@ -147,7 +154,7 @@ export default function statsApp() {
     refreshHistory();
   }
 
-  async function autoUpdate() {
+  async function updateApp() {
     const req = await fetch("/auto-update");
 
     if (req.ok) {
@@ -169,7 +176,9 @@ export default function statsApp() {
     refreshProcesses,
     toDecimal,
     toMB,
-    autoUpdate,
+    updateApp,
+    toggleRefresh,
+    autoRefresh,
     cpuUsage,
     diskUsage,
     networkUsage,

@@ -81,9 +81,22 @@
       <div class="p-8 min-h-screen flex flex-col items-stretch">
         <h1 class="flex items-center justify-between w-full mb-6">
           <span class="text-3xl font-bold text-gray-100">Server Dashboard</span>
-          <button class="cursor-pointer" on-click="autoUpdate()">
-            <lucide-icon icon="refresh-cw"></lucide-icon>
-          </button>
+          <div>
+            <button
+              class="cursor-pointer"
+              bind-value="autoRefresh"
+              on-click="toggleRefresh()"
+              class-text-green-400="autoRefresh"
+              class-text-red-400="!autoRefresh"
+            >
+              <lucide-icon
+                prop-icon="autoRefresh ? 'refresh-cw' : 'refresh-cw-off'"
+              ></lucide-icon>
+            </button>
+            <button class="cursor-pointer" on-click="updateApp()">
+              <lucide-icon icon="hard-drive-download"></lucide-icon>
+            </button>
+          </div>
         </h1>
 
         <div class="grid gap-6 md:grid-cols-2 mb-6 w-full">
