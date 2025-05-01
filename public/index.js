@@ -55,7 +55,7 @@ function useDisk() {
   });
 
   function refreshDisk() {
-    return stat("/disk", diskUsage);
+    return stat("/disk", usage);
   }
 
   return { diskUsage, refreshDisk };
