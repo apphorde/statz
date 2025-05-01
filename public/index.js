@@ -45,13 +45,12 @@ function useDisk() {
   });
 
   const diskUsage = effect(function () {
-    const v = usage.value;
-    return {
+    return usage.value.map((v) => ({
+      ...v,
       total: parseValue(v.total),
       used: parseValue(v.used),
       available: parseValue(v.available),
-      mountpoint: v.mountpoint,
-    };
+    }));
   });
 
   function refreshDisk() {
