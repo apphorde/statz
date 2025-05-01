@@ -171,12 +171,14 @@ export default function statsApp() {
   const diskFilter = signal([]);
 
   const diskUsageFiltered = effect(() => {
-    const t = diskFilter.value;
-    if (!t) {
-      return diskUsage.value;
+    const filter = diskFilter.value;
+    const list = diskUsage.value;
+
+    if (!filter) {
+      return list;
     }
 
-    return diskUsage.value.filter((disk) => t === disk.type);
+    return list.filter((disk) => filter === disk.type);
   });
 
   function onDiskFilter(filter) {
