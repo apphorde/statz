@@ -168,7 +168,7 @@ export default function statsApp() {
   const { ps, refreshProcesses } = useProcesses();
   const { history, refreshHistory } = useHistory({ memoryUsage, cpuUsage });
   const autoRefresh = signal(true);
-  const diskFilter = signal([]);
+  const diskFilter = signal("");
 
   const diskUsageFiltered = effect(() => {
     const filter = diskFilter.value;
