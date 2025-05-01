@@ -168,19 +168,19 @@ export default function statsApp() {
   const { ps, refreshProcesses } = useProcesses();
   const { history, refreshHistory } = useHistory({ memoryUsage, cpuUsage });
   const autoRefresh = signal(true);
-  const diskTypes = signal([]);
+  const diskFilter = signal([]);
 
   const diskUsageFiltered = effect(() => {
-    const t = diskTypes.value;
-    if (!t?.length) {
+    const t = diskFilter.value;
+    if (!t) {
       return diskUsage.value;
     }
 
-    return diskUsage.value.filter((disk) => t.includes(disk.type));
+    return diskUsage.value.filter((disk) => t === disk.type);
   });
 
-  function onDiskFilter(f) {
-    diskTypes.value = f;
+  function onDiskFilter(filter) {
+    diskFilter.value = filter;
   }
 
   function onToggleRefresh() {
@@ -224,9 +224,10 @@ export default function statsApp() {
     onUpdateApp,
     onToggleRefresh,
     onDiskFilter,
+    diskFilter,
+    diskUsage: diskUsageFiltered,
     autoRefresh,
     cpuUsage,
-    diskUsage: diskUsageFiltered,
     networkUsage,
     memoryUsage,
     fileSystems,

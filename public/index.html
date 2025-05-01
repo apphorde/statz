@@ -29,29 +29,18 @@
         export default function () {
           defineProp("icon");
           defineProp("title");
+          defineProp("filteredBy");
+
           const filters = defineProp("filters", {
             default() {
               return [];
             },
           });
 
-          const filterToggles = signal({});
           const onFilter = defineEvent("filter");
           const onRefresh = defineEvent("refresh");
 
-          effect(() => {
-            if (filters.value) {
-              filterToggles.value = {};
-            }
-          });
-
-          function toggleFilter(f) {
-            filterToggles.value[f] = !filterToggles.value[f];
-            const t = filterToggles.value;
-            onFilter(Object.keys(t).filter((k) => t[k]));
-          }
-
-          return { onRefresh, toggleFilter, filterToggles };
+          return { onRefresh, toggleFilter, onFilter };
         }
       </script>
       <div class="bg-white/10 p-6 rounded-lg shadow-md text-gray-200 h-full">
@@ -61,8 +50,8 @@
             <template for="filter of filters">
               <button
                 class="text-sm border bg-gray-800 p-1 mr-1"
-                class-bg-green-400="filterToggles[filter]"
-                on-click="toggleFilter(filter)"
+                class-bg-green-400="filteredBy === filter"
+                on-click="onFilter(filter)"
                 bind-inner-text="filter"
               ></button>
             </template>
@@ -220,6 +209,7 @@
           title="Disk Usage"
           on-refresh="refreshDisk()"
           prop-filters="fileSystems"
+          prop-filteredby="diskFilter"
           on-filter="onDiskFilter($event.detail)"
         >
           <div class="w-full">
