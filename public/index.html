@@ -160,9 +160,17 @@
                   prop-free="parseInt(disk.available)"
                 ></st-usage>
                 <div class="text-right">
-                  <span class="block p-2 whitespace-nowrap text-sm text-ellipsis">{{ disk.device }}</span>
-                  <span class="block p-2 whitespace-nowrap text-sm text-ellipsis">{{ disk.mountpoint }}</span>
+                  <span
+                    class="block p-2 whitespace-nowrap text-sm text-ellipsis"
+                    >{{ disk.device }}</span
+                  >
+                  <span
+                    class="block p-2 whitespace-nowrap text-sm text-ellipsis"
+                    >{{ disk.mountpoint }}</span
+                  >
                 </div>
+              </div>
+            </template>
           </div>
         </st-panel>
 
