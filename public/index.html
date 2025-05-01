@@ -47,11 +47,11 @@
     <template component="st-usage">
       <div class="text-2xl font-bold flex items-center justify-between">
         <span
-          >{{ toDecimal(used) }} {{ unit }} / {{ toDecimal(total) }} {{ unit
+          >{{ usedLabel }} {{ unitLabel }} / {{ totalLabel }} {{ unitLabel
           }}</span
         >
         <span class="text-xs text-gray-300"
-          >{{ toDecimal(free) }} {{ unit }} free</span
+          >{{ freeLabel }} {{ unitLabel }} free</span
         >
       </div>
 
@@ -64,15 +64,45 @@
 
       <script setup>
         import { defineProp } from "@li3/web";
-        import { toDecimal } from "app";
+        import { effect } from "@li3/reactive";
+        import { toDecimal, toMB, toGB } from "app";
 
         export default function stUsage() {
-          defineProp("total");
-          defineProp("used");
-          defineProp("free");
-          defineProp("unit");
+          const total = defineProp("total");
+          const used = defineProp("used");
+          const free = defineProp("free");
+          const unit = defineProp("unit");
 
-          return { toDecimal };
+          const unitLabel = effect(() => {
+            if (unit.value === "M") {
+              return "MB";
+            }
+
+            if (unit.value === "G") {
+              return "GB";
+            }
+
+            return "b";
+          });
+
+          const fx = (source) =>
+            effect(() => {
+              if (unit.value === "M") {
+                return toDecimal(toMB(source.value));
+              }
+
+              if (unit.value === "G") {
+                return toDecimal(source.value);
+              }
+
+              return toDecimal(source.value);
+            });
+
+          const totalLabel = fx(total);
+          const usedLabel = fx(used);
+          const freeLabel = fx(free);
+
+          return { toDecimal, unitLabel, totalLabel, usedLabel, freeLabel };
         }
       </script>
     </template>
@@ -123,7 +153,7 @@
           >
             <st-usage
               class="block"
-              unit="MB"
+              unit="M"
               prop-used="toMB(memoryUsage.used)"
               prop-total="toMB(memoryUsage.total)"
               prop-free="toMB(memoryUsage.free)"
@@ -167,10 +197,10 @@
               <div class="flex flex-wrap justify-between">
                 <st-usage
                   class="block w-full sm:w-1/2"
-                  prop-unit="disk.total.slice(-1) + 'B'"
-                  prop-used="parseInt(disk.used)"
-                  prop-total="parseInt(disk.total)"
-                  prop-free="parseInt(disk.available)"
+                  unit="G"
+                  prop-used="disk.used"
+                  prop-total="disk.total"
+                  prop-free="disk.available"
                 ></st-usage>
                 <div class="sm:text-right">
                   <span

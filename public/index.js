@@ -13,6 +13,10 @@ export function toMB(value) {
   return value / oneMB;
 }
 
+export function toGB(value) {
+  return value / oneGB
+}
+
 function trimArray(array, size = 100) {
   return array.slice(-size);
 }
