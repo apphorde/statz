@@ -24,18 +24,37 @@
     <template component="st-panel">
       <script setup>
         import { defineProp, defineEvent } from "@li3/web";
+        import { signal } from "@li3/reactive";
 
         export default function () {
           defineProp("icon");
           defineProp("title");
+          const filterToggles = signal({});
+          const onFilter = defineEvent("filter");
           const onRefresh = defineEvent("refresh");
 
-          return { onRefresh };
+          function toggleFilter(f) {
+            filters.value[f] = !filters.value[f];
+            const t = filters.value;
+            onFilter(Object.keys(t).filter((k) => t[k]));
+          }
+
+          return { onRefresh, toggleFilter, filterToggles };
         }
       </script>
       <div class="bg-white/10 p-6 rounded-lg shadow-md text-gray-200 h-full">
         <div class="flex items-center justify-between mb-2">
-          <h2 class="text-sm font-medium">{{ title }}</h2>
+          <h2 class="text-sm font-medium flex items-center">
+            <span class="mr-4"> {{ title }} </span>
+            <template for="filter of filters">
+              <button
+                class="text-sm border bg-gray-300 p-1 mr-1"
+                class-font-bold="filterToggles[filter]"
+                on-click="toggleFilter(filter)"
+                bind-inner-text="filter"
+              ></button>
+            </template>
+          </h2>
           <button on-click="onRefresh()">
             <lucide-icon prop-icon="icon"></lucide-icon>
           </button>
@@ -113,7 +132,7 @@
             <button
               class="cursor-pointer"
               bind-value="autoRefresh"
-              on-click="toggleRefresh()"
+              on-click="onToggleRefresh()"
               class-text-green-400="autoRefresh"
               class-text-red-400="!autoRefresh"
             >
@@ -121,7 +140,7 @@
                 prop-icon="autoRefresh ? 'refresh-cw' : 'refresh-cw-off'"
               ></lucide-icon>
             </button>
-            <button class="cursor-pointer" on-click="updateApp()">
+            <button class="cursor-pointer" on-click="onUpdateApp()">
               <lucide-icon icon="hard-drive-download"></lucide-icon>
             </button>
           </div>
@@ -188,6 +207,8 @@
           icon="hard-drive"
           title="Disk Usage"
           on-refresh="refreshDisk()"
+          filters="fileSystems"
+          on-filter="onDiskFilter($event)"
         >
           <div class="w-full">
             <template for="disk of diskUsage">

@@ -61,7 +61,11 @@ function useDisk() {
     return stat("/disk", usage);
   }
 
-  return { diskUsage, refreshDisk };
+  const fileSystems = effect(() =>
+    usage.value.map((disk) => disk.type).filter((t, i, a) => a.indexOf(t) === i)
+  );
+
+  return { diskUsage, fileSystems, refreshDisk };
 }
 
 function useCpu() {
@@ -157,15 +161,25 @@ function useHistory({ memoryUsage, cpuUsage }) {
 }
 
 export default function statsApp() {
-  const { diskUsage, refreshDisk } = useDisk();
+  const { diskUsage, fileSystems, refreshDisk } = useDisk();
   const { memoryUsage, refreshMemory } = useMemory();
   const { cpuUsage, refreshCpu } = useCpu();
   const { networkUsage, refreshNetwork } = useNetwork();
   const { ps, refreshProcesses } = useProcesses();
   const { history, refreshHistory } = useHistory({ memoryUsage, cpuUsage });
-
   const autoRefresh = signal(true);
-  function toggleRefresh() {
+  const diskTypes = signal([]);
+
+  const diskUsageFiltered = effect(() => {
+    const t = diskTypes.value;
+    return diskUsage.value.filter((disk) => t.includes(disk.type));
+  });
+
+  function onDiskFilter(f) {
+    diskTypes.value = f;
+  }
+
+  function onToggleRefresh() {
     autoRefresh.value = !autoRefresh.value;
   }
 
@@ -183,7 +197,7 @@ export default function statsApp() {
     refreshHistory();
   }
 
-  async function updateApp() {
+  async function onUpdateApp() {
     const req = await fetch("/auto-update");
 
     if (req.ok) {
@@ -203,13 +217,15 @@ export default function statsApp() {
     refreshMemory,
     refreshNetwork,
     refreshProcesses,
-    updateApp,
-    toggleRefresh,
+    onUpdateApp,
+    onToggleRefresh,
+    onDiskFilter,
     autoRefresh,
     cpuUsage,
-    diskUsage,
+    diskUsage: diskUsageFiltered,
     networkUsage,
     memoryUsage,
+    fileSystems,
     ps,
     history,
   };
