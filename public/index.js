@@ -29,7 +29,7 @@ function useDisk() {
   });
 
   function refreshDisk() {
-    return stat("/disk", usage);
+    return stat("/disk", diskUsage);
   }
 
   return { diskUsage, refreshDisk };
