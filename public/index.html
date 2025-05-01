@@ -52,7 +52,7 @@
 
       <div class="mt-2 bg-gray-200 rounded-full h-2">
         <div
-          class="bg-green-500 rounded-full h-2"
+          bind-class-name="classList"
           style-width="`${ (used / total) * 100}%`"
         ></div>
       </div>
@@ -84,6 +84,21 @@
           const totalLabel = fx(total);
           const usedLabel = fx(used);
           const freeLabel = fx(free);
+
+          const classList = effect(() => {
+            const amount = Math.floor(100 * (free / total));
+            const base = "rounded-full h-2 ";
+
+            if (amount < 10) {
+              return base + "bg-red-500";
+            }
+
+            if (amount < 25) {
+              return base + "bg-orange-500";
+            }
+
+            return base + "bg-green-500";
+          });
 
           return { totalLabel, usedLabel, freeLabel };
         }
@@ -177,7 +192,7 @@
           <div class="w-full">
             <template for="disk of diskUsage">
               <div
-                class="flex flex-col sm:flex-row justify-between mb-2 rounded-md border p-2 space-x-4"
+                class="flex flex-col sm:flex-row justify-between mb-2 rounded-md border border-gray-500 p-2 space-x-4"
               >
                 <st-usage
                   class="block w-full sm:w-2/3"
