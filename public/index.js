@@ -2,8 +2,8 @@ import "@sodium/na-chart";
 import { onInit } from "@li3/web";
 import { signal, effect } from "@li3/reactive";
 
-const oneMB = 1048576;
-const oneGB = oneMB * 1024;
+export const oneMB = 1048576;
+export const oneGB = oneMB * 1024;
 
 export function toDecimal(value) {
   return Number(value).toFixed(2);
@@ -14,7 +14,7 @@ export function toMB(value) {
 }
 
 export function toGB(value) {
-  return value / oneGB
+  return value / oneGB;
 }
 
 function trimArray(array, size = 100) {
@@ -203,8 +203,6 @@ export default function statsApp() {
     refreshMemory,
     refreshNetwork,
     refreshProcesses,
-    toDecimal,
-    toMB,
     updateApp,
     toggleRefresh,
     autoRefresh,

@@ -46,13 +46,8 @@
 
     <template component="st-usage">
       <div class="text-2xl font-bold flex items-center justify-between">
-        <span
-          >{{ usedLabel }} {{ unitLabel }} / {{ totalLabel }} {{ unitLabel
-          }}</span
-        >
-        <span class="text-xs text-gray-300"
-          >{{ freeLabel }} {{ unitLabel }} free</span
-        >
+        <span>{{ usedLabel }} / {{ totalLabel }}</span>
+        <span class="text-xs text-gray-300">{{ freeLabel }} free</span>
       </div>
 
       <div class="mt-2 bg-gray-200 rounded-full h-2">
@@ -65,44 +60,32 @@
       <script setup>
         import { defineProp } from "@li3/web";
         import { effect } from "@li3/reactive";
-        import { toDecimal, toMB, toGB } from "app";
+        import { toDecimal, toMB, toGB, oneGB, oneMB } from "app";
 
         export default function stUsage() {
           const total = defineProp("total");
           const used = defineProp("used");
           const free = defineProp("free");
-          const unit = defineProp("unit");
-
-          const unitLabel = effect(() => {
-            if (unit.value === "M") {
-              return "MB";
-            }
-
-            if (unit.value === "G") {
-              return "GB";
-            }
-
-            return "b";
-          });
 
           const fx = (source) =>
             effect(() => {
-              if (unit.value === "M") {
-                return toDecimal(toMB(source.value));
+              const v = source.value;
+              if (v >= oneGB) {
+                return toDecimal(toGB(v)) + "GB";
               }
 
-              if (unit.value === "G") {
-                return toDecimal(source.value);
+              if (v >= oneMB) {
+                return toDecimal(toMB(v)) + "MB";
               }
 
-              return toDecimal(source.value);
+              return toDecimal(v) + "b";
             });
 
           const totalLabel = fx(total);
           const usedLabel = fx(used);
           const freeLabel = fx(free);
 
-          return { toDecimal, unitLabel, totalLabel, usedLabel, freeLabel };
+          return { totalLabel, usedLabel, freeLabel };
         }
       </script>
     </template>
@@ -153,10 +136,9 @@
           >
             <st-usage
               class="block"
-              unit="M"
-              prop-used="toMB(memoryUsage.used)"
-              prop-total="toMB(memoryUsage.total)"
-              prop-free="toMB(memoryUsage.free)"
+              prop-used="memoryUsage.used"
+              prop-total="memoryUsage.total"
+              prop-free="memoryUsage.free"
             ></st-usage>
             <na-chart
               bind-options="{animate:false, truncateLegends:true}"
@@ -197,7 +179,6 @@
               <div class="flex flex-wrap justify-between">
                 <st-usage
                   class="block w-full sm:w-1/2"
-                  unit="G"
                   prop-used="disk.used"
                   prop-total="disk.total"
                   prop-free="disk.available"
