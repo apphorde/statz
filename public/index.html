@@ -150,47 +150,19 @@
           on-refresh="refreshDisk()"
         >
           <div class="w-full overflow-x-auto">
-            <table class="w-full">
-              <thead>
-                <tr>
-                  <th
-                    class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
-                  >
-                    Use
-                  </th>
-                  <th
-                    class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider"
-                  >
-                    Device
-                  </th>
-                  <th
-                    class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap"
-                  >
-                    Mounted on
-                  </th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-gray-200">
-                <template for="disk of diskUsage">
-                  <tr>
-                    <td>
-                      <st-usage
-                        prop-unit="disk.total.slice(-1) + 'B'"
-                        prop-used="parseInt(disk.used)"
-                        prop-total="parseInt(disk.total)"
-                        prop-free="parseInt(disk.available)"
-                      ></st-usage>
-                    </td>
-                    <td class="p-2 whitespace-nowrap text-sm">
-                      {{ disk.device }}
-                    </td>
-                    <td class="p-2 whitespace-nowrap text-sm">
-                      {{ disk.mountpoint }}
-                    </td>
-                  </tr>
-                </template>
-              </tbody>
-            </table>
+            <template for="disk of diskUsage">
+              <div class="flex flex-wrap justify-between">
+                <st-usage
+                  class="block"
+                  prop-unit="disk.total.slice(-1) + 'B'"
+                  prop-used="parseInt(disk.used)"
+                  prop-total="parseInt(disk.total)"
+                  prop-free="parseInt(disk.available)"
+                ></st-usage>
+                <div class="text-right">
+                  <span class="block p-2 whitespace-nowrap text-sm text-ellipsis">{{ disk.device }}</span>
+                  <span class="block p-2 whitespace-nowrap text-sm text-ellipsis">{{ disk.mountpoint }}</span>
+                </div>
           </div>
         </st-panel>
 
