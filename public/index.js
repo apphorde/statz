@@ -1,7 +1,9 @@
 import "@sodium/na-chart";
-import { ref, onInit } from "@li3/web";
+import { onInit } from "@li3/web";
+import { signal, effect } from "@li3/reactive";
 
 const oneMB = 1048576;
+const oneGB = oneMB * 1024;
 
 export function toDecimal(value) {
   return Number(value).toFixed(2);
@@ -21,11 +23,35 @@ async function stat(apiPath, target) {
 }
 
 function useDisk() {
-  const diskUsage = ref({
+  function parseValue(v) {
+    const int = parseInt(v);
+
+    if (v.endsWith("M")) {
+      return int * oneMB;
+    }
+
+    if (v.endsWith("G")) {
+      return int * oneGB;
+    }
+
+    return int;
+  }
+
+  const usage = signal({
     total: 0,
     used: 0,
     available: 0,
     mountpoint: "/",
+  });
+
+  const diskUsage = effect(function () {
+    const v = usage.value;
+    return {
+      total: parseValue(v.total),
+      used: parseValue(v.used),
+      available: parseValue(v.available),
+      mountpoint: v.mountpoint,
+    };
   });
 
   function refreshDisk() {
@@ -36,7 +62,7 @@ function useDisk() {
 }
 
 function useCpu() {
-  const cpuUsage = ref({
+  const cpuUsage = signal({
     cpus: [],
     loadAverage: [],
   });
@@ -49,7 +75,7 @@ function useCpu() {
 }
 
 function useMemory() {
-  const memoryUsage = ref({
+  const memoryUsage = signal({
     used: 0,
     total: 0,
     free: 0,
@@ -63,7 +89,7 @@ function useMemory() {
 }
 
 function useNetwork() {
-  const networkUsage = ref({
+  const networkUsage = signal({
     download: 0,
     upload: 0,
   });
@@ -80,13 +106,13 @@ function useProcesses() {
     return stat("/ps", ps);
   }
 
-  const ps = ref("");
+  const ps = signal("");
   return { ps, refreshProcesses };
 }
 
 function useHistory({ memoryUsage, cpuUsage }) {
   const previousHistory = localStorage.getItem("history");
-  const history = ref(
+  const history = signal(
     previousHistory
       ? JSON.parse(previousHistory)
       : {
@@ -135,7 +161,7 @@ export default function statsApp() {
   const { ps, refreshProcesses } = useProcesses();
   const { history, refreshHistory } = useHistory({ memoryUsage, cpuUsage });
 
-  const autoRefresh = ref(true);
+  const autoRefresh = signal(true);
   function toggleRefresh() {
     autoRefresh.value = !autoRefresh.value;
   }
