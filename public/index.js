@@ -84,7 +84,7 @@ function useProcesses() {
   return { ps, refreshProcesses };
 }
 
-function useHistory() {
+function useHistory({ memoryUsage, cpuUsage }) {
   const previousHistory = localStorage.getItem("history");
   const history = ref(
     previousHistory
@@ -133,7 +133,7 @@ export default function statsApp() {
   const { cpuUsage, refreshCpu } = useCpu();
   const { networkUsage, refreshNetwork } = useNetwork();
   const { ps, refreshProcesses } = useProcesses();
-  const { history, refreshHistory } = useHistory();
+  const { history, refreshHistory } = useHistory({ memoryUsage, cpuUsage });
 
   async function refresh() {
     await Promise.all([
