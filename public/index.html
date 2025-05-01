@@ -10,7 +10,8 @@
         "imports": {
           "@li3/": "https://--li3.static.apphor.de/",
           "@sodium/": "https://--sodium.static.apphor.de/",
-          "@lucide/": "https://--lucide.static.apphor.de/"
+          "@lucide/": "https://--lucide.static.apphor.de/",
+          "app": "/ui/index.js"
         }
       }
     </script>
@@ -63,7 +64,7 @@
 
       <script setup>
         import { defineProp } from "@li3/web";
-        import { toDecimal, toMB } from "/ui/index.js";
+        import { toDecimal, toMB } from "app";
 
         export default function stUsage() {
           defineProp("total");
