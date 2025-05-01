@@ -46,22 +46,24 @@
     <template component="st-usage">
       <div class="text-2xl font-bold flex items-center justify-between">
         <span
-          >{{ toDecimal(used) }} {{ unit }} / {{toDecimal(total) }} {{ unit
+          >{{ toDecimal(used) }} {{ unit }} / {{ toDecimal(total) }} {{ unit
           }}</span
         >
         <span class="text-xs text-gray-300"
           >{{ toDecimal(free) }} {{ unit }} free</span
         >
       </div>
+
       <div class="mt-2 bg-gray-200 rounded-full h-2">
         <div
           class="bg-green-500 rounded-full h-2"
           style-width="`${ (used / total) * 100}%`"
         ></div>
       </div>
+
       <script setup>
         import { defineProp } from "@li3/web";
-        import { toDecimal } from "./index.js";
+        import { toDecimal, toMB } from "/ui/index.js";
 
         export default function stUsage() {
           defineProp("total");
@@ -69,7 +71,7 @@
           defineProp("free");
           defineProp("unit");
 
-          return { toDecimal };
+          return { toDecimal, toMB };
         }
       </script>
     </template>
@@ -108,9 +110,9 @@
             <st-usage
               class="block"
               unit="MB"
-              prop-used="memoryUsage.used / oneMB"
-              prop-total="memoryUsage.total / oneMB"
-              prop-free="memoryUsage.free / oneMB"
+              prop-used="toMB(memoryUsage.used)"
+              prop-total="toMB(memoryUsage.total)"
+              prop-free="toMB(memoryUsage.free)"
             ></st-usage>
             <na-chart
               bind-options="{animate:false, truncateLegends:true}"
@@ -250,7 +252,7 @@
         </st-panel>
       </div>
 
-      <script setup src="./index.js"></script>
+      <script setup src="/ui/index.js"></script>
     </template>
   </body>
 </html>

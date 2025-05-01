@@ -1,33 +1,27 @@
-
 import "@sodium/na-chart";
 import { ref, onInit } from "@li3/web";
 import { toDecimal } from "./index.mjs";
+
+const oneMB = 1048576;
 
 export function toDecimal(value) {
   return Number(value).toFixed(2);
 }
 
-const oneMB = 1048576;
-const oneGB = oneMB * 1024;
+export function toMB(value) {
+  return value / oneMB;
+}
 
-export default function statsApp() {
-  const ps = ref("");
-  const cpuUsage = ref({
-    cpus: [],
-    loadAverage: [],
-  });
+function trimArray(array, size = 100) {
+  return array.slice(-size);
+}
 
-  const memoryUsage = ref({
-    used: 0,
-    total: 0,
-    free: 0,
-  });
+async function stat(apiPath, target) {
+  const req = await fetch(apiPath);
+  target.value = await req.json();
+}
 
-  const networkUsage = ref({
-    download: 0,
-    upload: 0,
-  });
-
+function useDisk() {
   const diskUsage = ref({
     total: 0,
     used: 0,
@@ -35,6 +29,63 @@ export default function statsApp() {
     mountpoint: "/",
   });
 
+  function refreshDisk() {
+    return stat("/disk", usage);
+  }
+
+  return { diskUsage, refreshDisk };
+}
+
+function useCpu() {
+  const cpuUsage = ref({
+    cpus: [],
+    loadAverage: [],
+  });
+
+  function refreshCpu() {
+    return stat("/cpu", cpuUsage);
+  }
+
+  return { cpuUsage, refreshCpu };
+}
+
+function useMemory() {
+  const memoryUsage = ref({
+    used: 0,
+    total: 0,
+    free: 0,
+  });
+
+  function refreshMemory() {
+    return stat("/memory", memoryUsage);
+  }
+
+  return { memoryUsage, refreshMemory };
+}
+
+function useNetwork() {
+  const networkUsage = ref({
+    download: 0,
+    upload: 0,
+  });
+
+  function refreshNetwork() {
+    return stat("/network", networkUsage);
+  }
+
+  return { networkUsage, refreshNetwork };
+}
+
+function useProcesses() {
+  function refreshProcesses() {
+    return stat("/ps", ps);
+  }
+
+  const ps = ref("");
+  return { ps, refreshProcesses };
+}
+
+function useHistory() {
   const previousHistory = localStorage.getItem("history");
   const history = ref(
     previousHistory
@@ -51,37 +102,7 @@ export default function statsApp() {
         }
   );
 
-  function refreshDisk() {
-    return stat("/disk", diskUsage);
-  }
-
-  function refreshMemory() {
-    return stat("/memory", memoryUsage);
-  }
-
-  function refreshCpu() {
-    return stat("/cpu", cpuUsage);
-  }
-
-  function refreshNetwork() {
-    return stat("/network", networkUsage);
-  }
-
-  function refreshProcesses() {
-    return stat("/ps", ps);
-  }
-
-  function trimArray(array, size = 100) {
-    return array.slice(-size);
-  }
-
-  async function refresh() {
-    await refreshMemory();
-    await refreshDisk();
-    await refreshCpu();
-    await refreshNetwork();
-    await refreshProcesses();
-
+  function refreshHistory() {
     const data = history.value;
     const now = new Date();
     const time = now.getHours() + ":" + now.getMinutes();
@@ -104,9 +125,27 @@ export default function statsApp() {
     localStorage.setItem("history", JSON.stringify(history.value));
   }
 
-  async function stat(apiPath, target) {
-    const req = await fetch(apiPath);
-    target.value = await req.json();
+  return { history, refreshHistory };
+}
+
+export default function statsApp() {
+  const { diskUsage, refreshDisk } = useDisk();
+  const { memoryUsage, refreshMemory } = useMemory();
+  const { cpuUsage, refreshCpu } = useCpu();
+  const { networkUsage, refreshNetwork } = useNetwork();
+  const { ps, refreshProcesses } = useProcesses();
+  const { history, refreshHistory } = useHistory();
+
+  async function refresh() {
+    await Promise.all([
+      refreshMemory(),
+      refreshDisk(),
+      refreshCpu(),
+      refreshNetwork(),
+      refreshProcesses(),
+    ]);
+
+    refreshHistory();
   }
 
   async function autoUpdate() {
@@ -138,6 +177,5 @@ export default function statsApp() {
     ps,
     history,
     oneMB,
-    oneGB,
   };
 }
