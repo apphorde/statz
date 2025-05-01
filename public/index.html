@@ -176,21 +176,23 @@
         >
           <div class="w-full overflow-x-auto">
             <template for="disk of diskUsage">
-              <div class="flex flex-wrap justify-between">
+              <div
+                class="flex sm:flex-col flex-wrap justify-between mb-2 rounded-md border p-2"
+              >
                 <st-usage
-                  class="block w-full sm:w-1/2"
+                  class="block w-full sm:w-2/3"
                   prop-used="disk.used"
                   prop-total="disk.total"
                   prop-free="disk.available"
                 ></st-usage>
                 <div class="sm:text-right">
                   <span
-                    class="block p-2 whitespace-nowrap text-sm text-ellipsis"
-                    >{{ disk.device }}</span
+                    class="block p-2 whitespace-nowrap font-bold text-ellipsis"
+                    >{{ disk.mountpoint }}</span
                   >
                   <span
-                    class="block p-2 whitespace-nowrap text-sm text-ellipsis"
-                    >{{ disk.mountpoint }}</span
+                    class="block p-2 whitespace-nowrap text-xs text-ellipsis"
+                    >{{ disk.device }}</span
                   >
                 </div>
               </div>
