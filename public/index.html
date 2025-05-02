@@ -106,7 +106,7 @@
           const freeLabel = fx(free);
 
           const classList = effect(() => {
-            const amount = Math.floor(100 * (free / total));
+            const amount = Math.floor(100 * (free.value / total.value));
             const base = "rounded-full h-2 ";
 
             if (amount < 10) {
