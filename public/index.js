@@ -169,6 +169,11 @@ export default function statsApp() {
   const { history, refreshHistory } = useHistory({ memoryUsage, cpuUsage });
   const autoRefresh = signal(true);
   const diskFilter = signal("");
+  const chartOptions = {
+    animate: false,
+    showTooltip: false,
+    truncateLegends: true,
+  };
 
   const diskUsageFiltered = effect(() => {
     const filter = diskFilter.value;
@@ -235,5 +240,6 @@ export default function statsApp() {
     fileSystems,
     ps,
     history,
+    chartOptions,
   };
 }

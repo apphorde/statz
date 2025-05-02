@@ -176,7 +176,7 @@
               prop-free="memoryUsage.free"
             ></st-usage>
             <na-chart
-              bind-options="{animate: false, showTooltip: false, truncateLegends: true}"
+              bind-options="chartOptions"
               bind-inputs="history.memory"
               class="block bg-white rounded overflow-hidden mt-6"
             ></na-chart>
@@ -197,7 +197,7 @@
               ></div>
             </div>
             <na-chart
-              bind-options="{animate: false, showTooltip: false, truncateLegends: true}"
+              bind-options="chartOptions"
               bind-inputs="history.cpu"
               class="block bg-white rounded overflow-hidden"
             ></na-chart>
