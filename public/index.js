@@ -44,12 +44,20 @@ function useDisk() {
   function parseValue(v) {
     const int = parseInt(v);
 
+    if (v.endsWith("K")) {
+      return int * oneKB;
+    }
+
     if (v.endsWith("M")) {
       return int * oneMB;
     }
 
     if (v.endsWith("G")) {
       return int * oneGB;
+    }
+
+    if (v.endsWith("T")) {
+      return int * oneTB;
     }
 
     return int;
