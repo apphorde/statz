@@ -80,26 +80,14 @@
       <script setup>
         import { defineProp } from "@li3/web";
         import { effect } from "@li3/reactive";
-        import { toDecimal, toMB, toGB, oneGB, oneMB } from "app";
+        import { resolveUnit } from "app";
 
         export default function stUsage() {
           const total = defineProp("total");
           const used = defineProp("used");
           const free = defineProp("free");
 
-          const fx = (source) =>
-            effect(() => {
-              const v = source.value;
-              if (v >= oneGB) {
-                return toDecimal(toGB(v)) + "GB";
-              }
-
-              if (v >= oneMB) {
-                return toDecimal(toMB(v)) + "MB";
-              }
-
-              return toDecimal(v) + "b";
-            });
+          const fx = (source) => effect(() => resolveUnit(source.value));
 
           const totalLabel = fx(total);
           const usedLabel = fx(used);

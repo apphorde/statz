@@ -2,19 +2,33 @@ import "@sodium/na-chart";
 import { onInit } from "@li3/web";
 import { signal, effect } from "@li3/reactive";
 
-export const oneMB = 1048576;
+export const oneKB = 1024;
+export const oneMB = oneKB * 1024;
 export const oneGB = oneMB * 1024;
+export const oneTB = oneGB * 1024;
 
-export function toDecimal(value) {
+function toDecimal(value) {
   return Number(value).toFixed(2);
 }
 
-export function toMB(value) {
-  return value / oneMB;
-}
+export function resolveUnit(value) {
+  if (value >= oneTB) {
+    return toDecimal(value / oneTB) + "TB";
+  }
 
-export function toGB(value) {
-  return value / oneGB;
+  if (value >= oneGB) {
+    return toDecimal(value / oneGB) + "GB";
+  }
+
+  if (value >= oneMB) {
+    return toDecimal(value / oneMB) + "MB";
+  }
+
+  if (value >= oneKB) {
+    return toDecimal(value / oneKB) + "KB";
+  }
+
+  return toDecimal(value) + "b";
 }
 
 function trimArray(array, size = 100) {
