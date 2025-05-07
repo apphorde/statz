@@ -42,7 +42,7 @@ async function stat(apiPath, target) {
 
 function useDisk() {
   function parseValue(v) {
-    const int = parseInt(v);
+    const int = parseFloat(v);
 
     if (v.endsWith("K")) {
       return int * oneKB;
