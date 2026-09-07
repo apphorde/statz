@@ -1,6 +1,5 @@
-import "@sodium/na-chart";
-import { onInit } from "@li3/web";
-import { signal, effect } from "@li3/reactive";
+import '@sodium/na-chart';
+import { onInit, ref, computed } from '@li3/web';
 
 export const oneKB = 1024;
 export const oneMB = oneKB * 1024;
@@ -13,22 +12,22 @@ function toDecimal(value) {
 
 export function resolveUnit(value) {
   if (value >= oneTB) {
-    return toDecimal(value / oneTB) + "TB";
+    return toDecimal(value / oneTB) + 'TB';
   }
 
   if (value >= oneGB) {
-    return toDecimal(value / oneGB) + "GB";
+    return toDecimal(value / oneGB) + 'GB';
   }
 
   if (value >= oneMB) {
-    return toDecimal(value / oneMB) + "MB";
+    return toDecimal(value / oneMB) + 'MB';
   }
 
   if (value >= oneKB) {
-    return toDecimal(value / oneKB) + "KB";
+    return toDecimal(value / oneKB) + 'KB';
   }
 
-  return toDecimal(value) + "b";
+  return toDecimal(value) + 'b';
 }
 
 function trimArray(array, size = 100) {
@@ -44,33 +43,33 @@ function useDisk() {
   function parseValue(v) {
     const int = parseFloat(v);
 
-    if (v.endsWith("K")) {
+    if (v.endsWith('K')) {
       return int * oneKB;
     }
 
-    if (v.endsWith("M")) {
+    if (v.endsWith('M')) {
       return int * oneMB;
     }
 
-    if (v.endsWith("G")) {
+    if (v.endsWith('G')) {
       return int * oneGB;
     }
 
-    if (v.endsWith("T")) {
+    if (v.endsWith('T')) {
       return int * oneTB;
     }
 
     return int;
   }
 
-  const usage = signal({
+  const usage = ref({
     total: 0,
     used: 0,
     available: 0,
-    mountpoint: "/",
+    mountpoint: '/',
   });
 
-  const diskUsage = effect(function () {
+  const diskUsage = computed(function () {
     return usage.value.map((v) => ({
       ...v,
       total: parseValue(v.total),
@@ -80,51 +79,49 @@ function useDisk() {
   });
 
   function refreshDisk() {
-    return stat("/disk", usage);
+    return stat('/disk', usage);
   }
 
-  const fileSystems = effect(() =>
-    usage.value.map((disk) => disk.type).filter((t, i, a) => a.indexOf(t) === i)
-  );
+  const fileSystems = computed(() => usage.value.map((disk) => disk.type).filter((t, i, a) => a.indexOf(t) === i));
 
   return { diskUsage, fileSystems, refreshDisk };
 }
 
 function useCpu() {
-  const cpuUsage = signal({
+  const cpuUsage = ref({
     cpus: [],
     loadAverage: [],
   });
 
   function refreshCpu() {
-    return stat("/cpu", cpuUsage);
+    return stat('/cpu', cpuUsage);
   }
 
   return { cpuUsage, refreshCpu };
 }
 
 function useMemory() {
-  const memoryUsage = signal({
+  const memoryUsage = ref({
     used: 0,
     total: 0,
     free: 0,
   });
 
   function refreshMemory() {
-    return stat("/memory", memoryUsage);
+    return stat('/memory', memoryUsage);
   }
 
   return { memoryUsage, refreshMemory };
 }
 
 function useNetwork() {
-  const networkUsage = signal({
+  const networkUsage = ref({
     download: 0,
     upload: 0,
   });
 
   function refreshNetwork() {
-    return stat("/network", networkUsage);
+    return stat('/network', networkUsage);
   }
 
   return { networkUsage, refreshNetwork };
@@ -132,51 +129,45 @@ function useNetwork() {
 
 function useProcesses() {
   function refreshProcesses() {
-    return stat("/ps", ps);
+    return stat('/ps', ps);
   }
 
-  const ps = signal("");
+  const ps = ref('');
   return { ps, refreshProcesses };
 }
 
 function useHistory({ memoryUsage, cpuUsage }) {
-  const previousHistory = localStorage.getItem("history");
-  const history = signal(
+  const previousHistory = localStorage.getItem('history');
+  const history = ref(
     previousHistory
       ? JSON.parse(previousHistory)
       : {
           memory: {
-            labels: Array(100).fill(""),
+            labels: Array(100).fill(''),
             datasets: [{ values: Array(100).fill(0) }],
           },
           cpu: {
-            labels: Array(100).fill(""),
+            labels: Array(100).fill(''),
             datasets: [{ values: Array(100).fill(0) }],
           },
-        }
+        },
   );
 
   function refreshHistory() {
     const data = history.value;
     const now = new Date();
-    const time = now.getHours() + ":" + now.getMinutes();
+    const time = now.getHours() + ':' + now.getMinutes();
 
-    data.memory.datasets[0].values = trimArray([
-      ...data.memory.datasets[0].values,
-      memoryUsage.value.used / oneMB,
-    ]);
+    data.memory.datasets[0].values = trimArray([...data.memory.datasets[0].values, memoryUsage.value.used / oneMB]);
 
     data.memory.labels = trimArray([...data.memory.labels, time]);
 
-    data.cpu.datasets[0].values = trimArray([
-      ...data.cpu.datasets[0].values,
-      cpuUsage.value.loadAverage[0],
-    ]);
+    data.cpu.datasets[0].values = trimArray([...data.cpu.datasets[0].values, cpuUsage.value.loadAverage[0]]);
 
     data.cpu.labels = trimArray([...data.cpu.labels, time]);
 
     history.value = { ...data };
-    localStorage.setItem("history", JSON.stringify(history.value));
+    localStorage.setItem('history', JSON.stringify(history.value));
   }
 
   return { history, refreshHistory };
@@ -189,15 +180,15 @@ export default function statsApp() {
   const { networkUsage, refreshNetwork } = useNetwork();
   const { ps, refreshProcesses } = useProcesses();
   const { history, refreshHistory } = useHistory({ memoryUsage, cpuUsage });
-  const autoRefresh = signal(true);
-  const diskFilter = signal("");
+  const autoRefresh = ref(true);
+  const diskFilter = ref('');
   const chartOptions = {
     animate: false,
     showTooltip: false,
     truncateLegends: true,
   };
 
-  const diskUsageFiltered = effect(() => {
+  const diskUsageFiltered = computed(() => {
     const filter = diskFilter.value;
     const list = diskUsage.value;
 
@@ -219,19 +210,13 @@ export default function statsApp() {
   async function refresh() {
     if (!autoRefresh.value) return;
 
-    await Promise.all([
-      refreshMemory(),
-      refreshDisk(),
-      refreshCpu(),
-      refreshNetwork(),
-      refreshProcesses(),
-    ]);
+    await Promise.all([refreshMemory(), refreshDisk(), refreshCpu(), refreshNetwork(), refreshProcesses()]);
 
     refreshHistory();
   }
 
   async function onUpdateApp() {
-    const req = await fetch("/auto-update");
+    const req = await fetch('/auto-update');
 
     if (req.ok) {
       window.location.reload();

@@ -1,44 +1,42 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Server Stats</title>
     <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <link rel="component" href="https://sodium.static.apphor.de/lucide-icon.html" />
     <script type="importmap">
       {
         "imports": {
           "@li3/": "https://at-li3.static.apphor.de/",
           "@sodium/": "https://at-sodium.static.apphor.de/",
-          "@lucide/": "https://--lucide.static.apphor.de/",
           "app": "/ui/index.js"
         }
       }
     </script>
     <script type="module">
-      import "@li3/web";
-      import "@lucide/lucide-icon";
+      import '@li3/web';
     </script>
   </head>
   <body class="bg-gray-700 text-white">
     <template component="st-panel">
       <script setup>
-        import { defineProp, defineEvent } from "@li3/web";
-        import { signal, effect } from "@li3/reactive";
+        import { defineProp, defineEvent } from '@li3/web';
 
         export default function () {
-          defineProp("icon");
-          defineProp("title");
-          defineProp("filteredby");
+          defineProp('icon');
+          defineProp('title');
+          defineProp('filteredby');
 
-          const filters = defineProp("filters", {
+          const filters = defineProp('filters', {
             default() {
               return [];
             },
           });
 
-          const onFilter = defineEvent("filter");
-          const onRefresh = defineEvent("refresh");
+          const onFilter = defineEvent('filter');
+          const onRefresh = defineEvent('refresh');
 
           return { onRefresh, onFilter };
         }
@@ -57,7 +55,7 @@
             </template>
           </h2>
           <button on-click="onRefresh()">
-            <lucide-icon prop-icon="icon"></lucide-icon>
+            <lucide-icon bind-icon="icon"></lucide-icon>
           </button>
         </div>
         <slot></slot>
@@ -71,41 +69,37 @@
       </div>
 
       <div class="mt-2 bg-gray-200 rounded-full h-2">
-        <div
-          bind-class-name="classList"
-          style-width="`${ (used / total) * 100}%`"
-        ></div>
+        <div bind-class-name="classList" style-width="`${ (used / total) * 100}%`"></div>
       </div>
 
       <script setup>
-        import { defineProp } from "@li3/web";
-        import { effect } from "@li3/reactive";
-        import { resolveUnit } from "app";
+        import { defineProp, computed } from '@li3/web';
+        import { resolveUnit } from 'app';
 
         export default function stUsage() {
-          const total = defineProp("total");
-          const used = defineProp("used");
-          const free = defineProp("free");
+          const total = defineProp('total');
+          const used = defineProp('used');
+          const free = defineProp('free');
 
-          const fx = (source) => effect(() => resolveUnit(source.value));
+          const fx = (source) => computed(() => resolveUnit(source.value));
 
           const totalLabel = fx(total);
           const usedLabel = fx(used);
           const freeLabel = fx(free);
 
-          const classList = effect(() => {
+          const classList = computed(() => {
             const amount = Math.floor(100 * (free.value / total.value));
-            const base = "rounded-full h-2 ";
+            const base = 'rounded-full h-2 ';
 
             if (amount < 10) {
-              return base + "bg-red-500";
+              return base + 'bg-red-500';
             }
 
             if (amount < 25) {
-              return base + "bg-orange-500";
+              return base + 'bg-orange-500';
             }
 
-            return base + "bg-green-500";
+            return base + 'bg-green-500';
           });
 
           return { totalLabel, usedLabel, freeLabel, classList };
@@ -125,9 +119,7 @@
               class-text-green-400="autoRefresh"
               class-text-red-400="!autoRefresh"
             >
-              <lucide-icon
-                prop-icon="autoRefresh ? 'refresh-cw' : 'refresh-cw-off'"
-              ></lucide-icon>
+              <lucide-icon bind-icon="autoRefresh ? 'refresh-cw' : 'refresh-cw-off'"></lucide-icon>
             </button>
             <button class="cursor-pointer" on-click="onUpdateApp()">
               <lucide-icon icon="hard-drive-download"></lucide-icon>
@@ -136,32 +128,12 @@
         </h1>
 
         <div class="grid gap-6 md:grid-cols-2 mb-6 w-full">
-          <!-- lg:grid-cols-3 -->
-          <!-- st-panel
-            icon="network"
-            title="Network Usage"
-            on-refresh="refreshNetwork()"
-          >
-            <div class="text-2xl font-bold">
-              {{ networkUsage.download | 0 }} Mbps
-            </div>
-            <p class="text-xs text-gray-500">↓ Download</p>
-            <div class="mt-4 text-2xl font-bold">
-              {{ networkUsage.upload | 0 }} Mbps
-            </div>
-            <p class="text-xs text-gray-500">↑ Upload</p>
-          </st-panel -->
-
-          <st-panel
-            icon="memory-stick"
-            title="Memory Usage"
-            on-refresh="refreshMemory()"
-          >
+          <st-panel icon="memory-stick" title="Memory Usage" on-refresh="refreshMemory()">
             <st-usage
               class="block"
-              prop-used="memoryUsage.used"
-              prop-total="memoryUsage.total"
-              prop-free="memoryUsage.free"
+              bind-used="memoryUsage.used"
+              bind-total="memoryUsage.total"
+              bind-free="memoryUsage.free"
             ></st-usage>
             <na-chart
               bind-options="chartOptions"
@@ -171,9 +143,7 @@
           </st-panel>
 
           <st-panel icon="cpu" title="CPU Usage" on-refresh="refreshCpu()">
-            <div
-              class="text-2xl mb-2 font-bold text-white flex items-center justify-between"
-            >
+            <div class="text-2xl mb-2 font-bold text-white flex items-center justify-between">
               <span> {{ cpuUsage.loadAverage[0] }} </span>
               <span> {{ cpuUsage.loadAverage[1] }} </span>
               <span> {{ cpuUsage.loadAverage[2] }} </span>
@@ -197,76 +167,43 @@
           icon="hard-drive"
           title="Disk Usage"
           on-refresh="refreshDisk()"
-          prop-filters="fileSystems"
-          prop-filteredby="diskFilter"
+          bind-filters="fileSystems"
+          bind-filteredby="diskFilter"
           on-filter="onDiskFilter($event.detail)"
         >
           <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
             <template for="disk of diskUsage">
-              <div
-                class="flex flex-col sm:flex-row justify-between rounded-md border border-gray-500 p-2 sm:space-x-4"
-              >
+              <div class="flex flex-col sm:flex-row justify-between rounded-md border border-gray-500 p-2 sm:space-x-4">
                 <div class="sm:w-1/3">
-                  <span
-                    class="font-bold block whitespace-nowrap text-ellipsis w-full overflow-hidden"
+                  <span class="font-bold block whitespace-nowrap text-ellipsis w-full overflow-hidden"
                     >{{ disk.mountpoint }}</span
                   >
-                  <span
-                    class="text-xs block whitespace-nowrap text-ellipsis w-full overflow-hidden"
+                  <span class="text-xs block whitespace-nowrap text-ellipsis w-full overflow-hidden"
                     >{{ disk.device }}</span
                   >
                 </div>
                 <st-usage
                   class="block w-full sm:w-2/3"
-                  prop-used="disk.used"
-                  prop-total="disk.total"
-                  prop-free="disk.available"
+                  bind-used="disk.used"
+                  bind-total="disk.total"
+                  bind-free="disk.available"
                 ></st-usage>
               </div>
             </template>
           </div>
         </st-panel>
 
-        <st-panel
-          class="mb-6 w-full block"
-          icon="cpu"
-          title="Top processes"
-          on-refresh="refreshProcesses()"
-        >
+        <st-panel class="mb-6 w-full block" icon="cpu" title="Top processes" on-refresh="refreshProcesses()">
           <div class="w-full overflow-x-auto font-mono">
             <table class="w-full">
               <thead>
                 <tr>
-                  <th
-                    class="p-3 text-left text-xs font-medium uppercase tracking-wider"
-                  >
-                    pid
-                  </th>
-                  <th
-                    class="p-3 text-left text-xs font-medium uppercase tracking-wider"
-                  >
-                    User
-                  </th>
-                  <th
-                    class="p-3 text-left text-xs font-medium uppercase tracking-wider"
-                  >
-                    %CPU
-                  </th>
-                  <th
-                    class="p-3 text-left text-xs font-medium uppercase tracking-wider"
-                  >
-                    %Mem
-                  </th>
-                  <th
-                    class="p-3 text-left text-xs font-medium uppercase tracking-wider"
-                  >
-                    Time
-                  </th>
-                  <th
-                    class="p-3 text-left text-xs font-medium uppercase tracking-wider"
-                  >
-                    Command
-                  </th>
+                  <th class="p-3 text-left text-xs font-medium uppercase tracking-wider">pid</th>
+                  <th class="p-3 text-left text-xs font-medium uppercase tracking-wider">User</th>
+                  <th class="p-3 text-left text-xs font-medium uppercase tracking-wider">%CPU</th>
+                  <th class="p-3 text-left text-xs font-medium uppercase tracking-wider">%Mem</th>
+                  <th class="p-3 text-left text-xs font-medium uppercase tracking-wider">Time</th>
+                  <th class="p-3 text-left text-xs font-medium uppercase tracking-wider">Command</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-200 text-sm whitespace-nowrap">
