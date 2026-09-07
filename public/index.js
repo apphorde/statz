@@ -1,4 +1,3 @@
-import '@sodium/na-chart';
 import { onInit, ref, computed } from '@li3/web';
 
 export const oneKB = 1024;
