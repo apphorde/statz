@@ -61,12 +61,12 @@ function useDisk() {
     return int;
   }
 
-  const usage = ref({
+  const usage = ref([{
     total: 0,
     used: 0,
     available: 0,
     mountpoint: '/',
-  });
+  }]);
 
   const diskUsage = computed(function () {
     return usage.value.map((v) => ({
@@ -77,11 +77,11 @@ function useDisk() {
     }));
   });
 
+  const fileSystems = computed(() => usage.value.map((disk) => disk.type).filter((t, i, a) => a.indexOf(t) === i));
+
   function refreshDisk() {
     return stat('/disk', usage);
   }
-
-  const fileSystems = computed(() => usage.value.map((disk) => disk.type).filter((t, i, a) => a.indexOf(t) === i));
 
   return { diskUsage, fileSystems, refreshDisk };
 }
