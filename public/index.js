@@ -61,13 +61,7 @@ function useDisk() {
     return int;
   }
 
-  const usage = ref([{
-    total: 0,
-    used: 0,
-    available: 0,
-    mountpoint: '/',
-  }]);
-
+  const usage = ref([]);
   const diskUsage = computed(function () {
     return usage.value.map((v) => ({
       ...v,
